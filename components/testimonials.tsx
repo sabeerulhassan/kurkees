@@ -1,7 +1,4 @@
-'use client'
-
-import { useState } from 'react'
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Star } from 'lucide-react'
 
 const reviews = [
   {
@@ -37,51 +34,12 @@ const reviews = [
 ]
 
 export function Testimonials() {
-  const [index, setIndex] = useState(0)
-
-  const prev = () => setIndex((i) => (i - 1 + reviews.length) % reviews.length)
-  const next = () => setIndex((i) => (i + 1) % reviews.length)
-
   return (
     <div className="mx-auto max-w-6xl px-4">
-      {/* Desktop Grid Layout (3 Columns) */}
-      <div className="hidden gap-6 md:grid md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex snap-x gap-5 overflow-x-auto pb-3 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-3">
         {reviews.map((r) => (
           <ReviewCard key={r.name} review={r} />
         ))}
-      </div>
-
-      {/* Mobile / Tablet Carousel Layout */}
-      <div className="md:hidden max-w-md mx-auto">
-        <ReviewCard review={reviews[index]} />
-        <div className="mt-6 flex items-center justify-center gap-4">
-          <button
-            type="button"
-            onClick={prev}
-            aria-label="Previous review"
-            className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-border bg-card text-card-foreground transition-transform active:scale-95"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <div className="flex gap-2">
-            {reviews.map((_, i) => (
-              <span
-                key={i}
-                className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                  i === index ? 'bg-primary' : 'bg-border'
-                }`}
-              />
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={next}
-            aria-label="Next review"
-            className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-border bg-card text-card-foreground transition-transform active:scale-95"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
       </div>
     </div>
   )
@@ -93,9 +51,9 @@ function ReviewCard({
   review: (typeof reviews)[number]
 }) {
   return (
-    <div className="flex h-full flex-col justify-between rounded-3xl border-2 border-border bg-card p-6 shadow-[0_6px_0_0_var(--border)]">
+    <figure className="flex h-full min-w-[82%] snap-center flex-col justify-between rounded-3xl border-2 border-border bg-card p-6 shadow-[0_6px_0_0_var(--border)] sm:min-w-[60%] md:min-w-0">
       <div>
-        <div className="flex gap-1 mb-4">
+        <div className="mb-4 flex gap-1" aria-label={`${review.rating} out of 5 stars`}>
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
               key={i}
@@ -107,18 +65,18 @@ function ReviewCard({
             />
           ))}
         </div>
-        <p className="font-sans text-base leading-relaxed text-card-foreground whitespace-pre-line">
+        <blockquote className="font-sans text-base leading-relaxed text-card-foreground whitespace-pre-line">
           “{review.text}”
-        </p>
+        </blockquote>
       </div>
-      <div className="mt-6 flex items-center gap-3 border-t border-border pt-4">
+      <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky font-heading text-sm font-bold text-sky-foreground">
           {review.initials}
         </span>
         <span className="font-sans font-bold text-sm text-card-foreground line-clamp-1">
           {review.name}
         </span>
-      </div>
-    </div>
+      </figcaption>
+    </figure>
   )
 }

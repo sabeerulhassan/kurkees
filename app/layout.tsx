@@ -1,72 +1,66 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Lora, Nunito, Geist_Mono } from 'next/font/google' // <-- Replaced Fredoka with Lora
+import { Fredoka, Plus_Jakarta_Sans } from 'next/font/google'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { CartProvider } from '@/lib/cart-context'
-import { PromoModal } from '@/components/promo-modal'
+import { siteConfig } from '@/lib/site'
 import './globals.css'
 
-const lora = Lora({
-  variable: '--font-heading',
+const fredoka = Fredoka({
+  variable: '--font-fredoka',
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-})
-const nunito = Nunito({
-  variable: '--font-nunito',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-})
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  display: 'swap',
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kurkees.com'
+const jakarta = Plus_Jakarta_Sans({
+  variable: '--font-jakarta',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+})
+
+const siteUrl = siteConfig.url
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Kurkees — Peanut Goodness in Every Scoop',
-    template: '%s | Kurkees'
+    default: 'Kurkees Peanut Butter Sri Lanka | Local Peanut Spreads',
+    template: '%s | Kurkees',
   },
   description:
-    'Kurkees makes all-natural, high-protein peanut butter with 0% added sugar. Smooth, crunchy, chocolate, spicy and more. Shop the goodness.',
-  generator: 'v0.app',
-  keywords: [
-    'peanut butter',
-    'natural peanut butter',
-    'high protein peanut butter',
-    'sugar-free peanut butter',
-    'Kurkees',
-    'healthy snacks'
-  ],
+    'Shop Kurkees jars in Sri Lanka. Compare smooth, crunchy, sugar-free, unsalted and chocolate peanut spreads with clear prices and easy website checkout.',
   authors: [{ name: 'Kurkees Team' }],
   creator: 'Kurkees',
   publisher: 'Kurkees',
   alternates: {
-    canonical: './',
+    canonical: '/',
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
   },
   openGraph: {
     type: 'website',
-    locale: 'en_US',
+    locale: 'en_LK',
     url: siteUrl,
     siteName: 'Kurkees',
-    title: 'Kurkees — Peanut Goodness in Every Scoop',
-    description: 'All-natural, high-protein peanut butter with 0% added sugar. Smooth, crunchy, chocolate, spicy and more.',
+    title: 'Kurkees Peanut Butter Sri Lanka',
+    description:
+      'Fresh local jars for Sri Lankan families, fitness meals and everyday snacks. Choose smooth, crunchy, sugar-free and chocolate peanut spreads.',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Kurkees — All-Natural Peanut Goodness',
-      }
-    ]
+        alt: 'Kurkees peanut butter Sri Lanka',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Kurkees — Peanut Goodness in Every Scoop',
-    description: 'All-natural, high-protein peanut butter with 0% added sugar.',
+    title: 'Kurkees Peanut Butter Sri Lanka',
+    description: 'Shop local jars with clear prices and easy website checkout.',
     images: ['/og-image.jpg'],
   },
   robots: {
@@ -78,12 +72,12 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
-    }
-  }
+    },
+  },
 }
 
 export const viewport: Viewport = {
-  themeColor: '#bfe3f5',
+  themeColor: '#326fc2',
   width: 'device-width',
   initialScale: 1,
 }
@@ -96,14 +90,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${lora.variable} ${nunito.variable} ${geistMono.variable} bg-background`}
+      className={`${fredoka.variable} ${jakarta.variable} bg-background`}
     >
-      <body className="font-sans antialiased text-stone-900 bg-[#faf9f6]">
+      <body className="font-sans antialiased text-foreground bg-background">
         <CartProvider>
           <Navbar />
           {children}
           <Footer />
-          <PromoModal />
         </CartProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

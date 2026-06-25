@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "lsof -ti:3000 | xargs kill -9 &&next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "validate:routes": "node scripts/validate-routes.mjs",
+    "prebuild": "node scripts/validate-routes.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
