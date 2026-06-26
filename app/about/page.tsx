@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, CheckCircle, Heart, Sparkles } from 'lucide-react'
-import { FoodMomentMosaic, PeanutPattern, ProductJarCluster } from '@/components/brand-visuals'
-import { products } from '@/lib/data'
+import { FoodMomentMosaic, PeanutPattern, ProductJarCluster, ProductJarStack } from '@/components/brand-visuals'
 import { getApiProductImage, getApiProducts } from '@/lib/api-products'
 
 export const metadata: Metadata = {
@@ -56,7 +54,7 @@ export default async function AboutPage() {
             </div>
           </div>
           <div className="relative z-10">
-            <ProductJarCluster />
+            <ProductJarCluster products={apiProducts} />
           </div>
         </div>
       </section>
@@ -72,7 +70,7 @@ export default async function AboutPage() {
               We want Kurkees to feel close to the way people already eat: bread, roti, oats, bananas, smoothies, lunchboxes, gym meals and quick snacks after a busy day.
             </p>
           </div>
-          <FoodMomentMosaic />
+          <FoodMomentMosaic products={apiProducts} />
         </div>
       </section>
 
@@ -154,12 +152,7 @@ export default async function AboutPage() {
               Explore products <ArrowRight className="h-5 w-5" />
             </Link>
           </div>
-          <div className="relative min-h-[330px]">
-            <div className="absolute inset-x-10 bottom-0 h-16 rounded-full bg-black/30 blur-xl" />
-            <Image src={products[6].image} alt="Chocofeda chocolate peanut spread" width={230} height={320} className="absolute right-4 top-0 w-[40%] rotate-[9deg] drop-shadow-2xl" />
-            <Image src={products[4].image} alt="Unsalted sugar-free Kurkees jar" width={260} height={340} className="absolute left-8 top-4 w-[46%] -rotate-[8deg] drop-shadow-2xl" />
-            <Image src={products[1].image} alt="Crunchy Kurkees jar" width={220} height={310} className="absolute bottom-0 left-1/2 w-[36%] -translate-x-1/2 rotate-[3deg] drop-shadow-2xl" />
-          </div>
+          <ProductJarStack products={apiProducts} className="min-h-[330px]" />
         </div>
       </section>
     </main>

@@ -2,13 +2,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, MessageCircle, ShoppingBag, ShieldCheck, Sparkles, Truck } from 'lucide-react'
 import type { Metadata } from 'next'
-import { products } from '@/lib/data'
 import { featuredCollectionLinks } from '@/lib/collections'
 import { getBlogPosts } from '@/lib/notion'
 import { ProductCard } from '@/components/product-card'
 import { getApiProducts } from '@/lib/api-products'
 import { Testimonials } from '@/components/testimonials'
-import { FoodMomentMosaic, PeanutPattern, ProductJarCluster, ProductStrip } from '@/components/brand-visuals'
+import { FoodMomentMosaic, PeanutPattern, ProductJarCluster, ProductJarStack, ProductStrip } from '@/components/brand-visuals'
 import { jsonLdScript } from '@/lib/json-ld'
 
 const benefits = [
@@ -104,12 +103,12 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="relative z-10">
-              <ProductJarCluster />
+              <ProductJarCluster products={apiProducts} />
             </div>
           </div>
         </section>
 
-        <ProductStrip />
+        <ProductStrip products={apiProducts} />
 
         <section className="section-blue relative overflow-hidden py-16 sm:py-20">
           <div className="absolute -left-16 -top-16 h-56 w-56 rounded-full bg-[var(--brand-yellow)]/30" />
@@ -127,7 +126,7 @@ export default async function HomePage() {
                 See our story <ArrowRight className="h-5 w-5" />
               </Link>
             </div>
-            <FoodMomentMosaic />
+            <FoodMomentMosaic products={apiProducts} />
           </div>
         </section>
 
@@ -278,11 +277,7 @@ export default async function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="relative min-h-[320px]">
-              <Image src={products[6].image} alt="Chocofeda jar" width={230} height={320} className="absolute right-4 top-0 w-[42%] rotate-[8deg] drop-shadow-2xl" />
-              <Image src={products[0].image} alt="Kurkees smooth jar" width={260} height={340} className="absolute left-8 top-8 w-[48%] -rotate-[8deg] drop-shadow-2xl" />
-              <Image src={products[1].image} alt="Kurkees crunchy jar" width={220} height={310} className="absolute bottom-0 left-1/2 w-[38%] -translate-x-1/2 rotate-[3deg] drop-shadow-2xl" />
-            </div>
+            <ProductJarStack products={apiProducts} />
           </div>
         </section>
       </main>
