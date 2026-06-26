@@ -40,24 +40,61 @@ function getVisualImage(product: StoreProduct, variant: 'thumbnail' | 'medium' =
   return getApiProductImage(product, variant) || getApiProductImage(product, 'thumbnail') || getApiProductImage(product)
 }
 
+function getSizedCloudinaryUrl(url: string, width: number) {
+  if (!/^https:\/\/res\.cloudinary\.com\//i.test(url) || !url.includes('/image/upload/')) return url
+
+  const marker = '/image/upload/'
+  const [prefix, rest] = url.split(marker)
+  const parts = rest.split('/')
+  const firstSegment = parts[0] || ''
+  const hasTransform = firstSegment.includes(',') || firstSegment.includes('w_') || firstSegment.includes('q_') || firstSegment.includes('f_') || firstSegment.includes('c_')
+  const publicPath = hasTransform ? parts.slice(1).join('/') : rest
+
+  return `${prefix}${marker}c_fit,w_${width},q_auto:good,f_auto/${publicPath}`
+}
+
+function buildCloudinarySrcSet(url: string, widths: number[]) {
+  if (!/^https:\/\/res\.cloudinary\.com\//i.test(url)) return undefined
+  return widths.map((width) => `${getSizedCloudinaryUrl(url, width)} ${width}w`).join(', ')
+}
+
+function getResponsiveVisualImage(product: StoreProduct, maxWidth = 384) {
+  const imageUrl = getVisualImage(product, 'medium')
+  if (!imageUrl) return null
+
+  const widths = [160, 240, 320, maxWidth]
+    .filter((width, index, list) => width <= maxWidth && list.indexOf(width) === index)
+
+  return {
+    src: getSizedCloudinaryUrl(imageUrl, maxWidth),
+    srcSet: buildCloudinarySrcSet(imageUrl, widths),
+  }
+}
+
 function ProductJarVisual({
   product,
   className,
   eager = false,
+  maxWidth = 384,
+  sizes = '(max-width: 640px) 44vw, 220px',
 }: {
   product: StoreProduct
   className: string
   eager?: boolean
+  maxWidth?: number
+  sizes?: string
 }) {
-  const imageUrl = getVisualImage(product, 'medium')
-  if (!imageUrl) return null
+  const image = getResponsiveVisualImage(product, maxWidth)
+  if (!image) return null
 
   return (
     <img
-      src={imageUrl}
+      src={image.src}
+      srcSet={image.srcSet}
+      sizes={sizes}
       alt={`${product.name} jar`}
       loading={eager ? 'eager' : 'lazy'}
-      decoding="async"
+      decoding={eager ? 'sync' : 'async'}
       className={className}
     />
   )
@@ -84,6 +121,8 @@ export function ProductJarCluster({ products = [], className = '' }: { products?
             key={product.slug}
             product={product}
             eager={index === 0}
+            maxWidth={384}
+            sizes="(max-width: 640px) 43vw, 224px"
             className={`absolute h-auto drop-shadow-2xl ${positions[index]}`}
           />
         )
@@ -127,7 +166,7 @@ export function FoodMomentMosaic({ products = [] }: { products?: StoreProduct[] 
   return (
     <div className="grid gap-4 md:grid-cols-3">
       {moments.map((moment, index) => {
-        const imageUrl = moment.product ? getVisualImage(moment.product, 'medium') : null
+        const image = moment.product ? getResponsiveVisualImage(moment.product, 320) : null
         return (
           <div key={moment.title} className={`relative min-h-[250px] overflow-hidden rounded-[2rem] p-5 shadow-[0_10px_0_rgba(74,44,8,.12)] sm:min-h-[290px] sm:p-6 ${moment.bg} ${moment.textColor}`}>
             <div className="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-white/20" />
@@ -137,9 +176,11 @@ export function FoodMomentMosaic({ products = [] }: { products?: StoreProduct[] 
               <h3 className="mt-2 font-heading text-3xl font-bold leading-none">{moment.title}</h3>
               <p className="mt-3 font-sans text-sm font-semibold leading-relaxed opacity-85">{moment.text}</p>
             </div>
-            {imageUrl && moment.product && (
+            {image && moment.product && (
               <img
-                src={imageUrl}
+                src={image.src}
+                srcSet={image.srcSet}
+                sizes="(max-width: 640px) 44vw, 170px"
                 alt={`${moment.product.name} jar`}
                 loading="lazy"
                 decoding="async"
@@ -166,12 +207,12 @@ export function ProductStrip({ products = [] }: { products?: StoreProduct[] }) {
     <div className="relative overflow-hidden bg-[var(--brand-brown)] py-4 text-white">
       <div className="flex min-w-max animate-none items-center gap-3 overflow-x-auto px-4 pb-1 font-heading text-base font-bold sm:justify-center sm:gap-5 sm:overflow-visible sm:pb-0 sm:text-lg">
         {stripProducts.map((product) => {
-          const imageUrl = getVisualImage(product, 'thumbnail')
+          const image = getResponsiveVisualImage(product, 96)
           return (
             <Link key={product.slug} href={`/products/${product.slug}`} className="group inline-flex shrink-0 items-center gap-3 rounded-full bg-white/10 py-2 pl-2 pr-5 transition-colors hover:bg-white/18">
               <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
-                {imageUrl ? (
-                  <img src={imageUrl} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain p-1" />
+                {image ? (
+                  <img src={image.src} srcSet={image.srcSet} sizes="40px" alt="" loading="lazy" decoding="async" className="h-full w-full object-contain p-1" />
                 ) : (
                   <span className="font-heading text-xs font-bold text-[var(--brand-brown)]">K</span>
                 )}
@@ -205,6 +246,8 @@ export function ProductJarStack({ products = [], className = '' }: { products?: 
           <ProductJarVisual
             key={product.slug}
             product={product}
+            maxWidth={360}
+            sizes="(max-width: 640px) 46vw, 212px"
             className={`absolute h-auto drop-shadow-2xl ${positions[index]}`}
           />
         )

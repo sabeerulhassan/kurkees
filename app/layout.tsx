@@ -90,6 +90,10 @@ export default function RootLayout({
       lang="en"
       className={`${fredoka.variable} ${jakarta.variable} bg-background`}
     >
+      <head>
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+      </head>
       <body className="font-sans antialiased text-foreground bg-background">
         <SiteShell>
           {children}
