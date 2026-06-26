@@ -1,71 +1,89 @@
 import type { Metadata } from 'next'
 import { ProductsClient } from '@/components/products-client'
+import {
+  getApiProducts,
+} from '@/lib/api-products'
+import { jsonLdScript } from '@/lib/json-ld'
+import { productJsonLd } from '@/lib/product-structured-data'
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kurkees.com'
 
 export const metadata: Metadata = {
-  title: 'Products',
+  title: 'Shop Kurkees Jars | Prices & Flavours in Sri Lanka',
   description:
-    'Shop all Kurkees peanut butter flavors: smooth, crunchy, chocolate, spicy, unsalted, salted, sugar-free and more.',
+    'Check Kurkees jar prices in Sri Lanka and choose smooth, crunchy, sugar-free, unsalted or chocolate peanut spreads with easy website checkout.',
   alternates: {
     canonical: '/products',
   },
-}
-
-async function getDynamicProducts() {
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api'
-    const res = await fetch(`${apiUrl}/products`, { cache: 'no-store' }) // Keeps data fresh
-    if (!res.ok) throw new Error('Failed to retrieve products')
-    const json = await res.json()
-    return json.data || []
-  } catch (e) {
-    console.error('Failed to load products from database:', e)
-    return [] // Fallback to avoid breaking layout
-  }
+  openGraph: {
+    title: 'Shop Kurkees Jars | Prices & Flavours',
+    description:
+      'Shop local Sri Lankan peanut butter jars. Compare smooth, crunchy, sugar-free, unsalted and chocolate options with clear prices and sizes.',
+    url: `${siteUrl}/products`,
+    type: 'website',
+  },
 }
 
 export default async function ProductsPage() {
-  const dynamicProducts = await getDynamicProducts()
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kurkees.com'
+  const products = await getApiProducts()
 
   const productListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    'name': 'Kurkees Products',
-    'description': 'Shop the full collection of premium peanut butter jars.',
-    'url': `${siteUrl}/products`,
-    'numberOfItems': dynamicProducts.length,
-    'itemListElement': dynamicProducts.map((product: any, index: number) => {
-      const startingPrice = Math.min(...product.sizes.map((s: any) => s.price))
-      
-      return {
-        '@type': 'ListItem',
-        'position': index + 1,
-        'item': {
-          '@type': 'Product',
-          'name': product.name,
-          'description': product.description || `${product.name} - ${product.flavor} peanut butter.`,
-          'image': product.images[0]?.image_url ? `${siteUrl}${product.images[0].image_url}` : `${siteUrl}/placeholder.svg`,
-          'url': `${siteUrl}/products`,
-          'offers': {
-            '@type': 'Offer',
-            'priceCurrency': 'LKR',
-            'price': startingPrice,
-            'itemCondition': 'https://schema.org/NewCondition',
-            'availability': 'https://schema.org/InStock',
-          }
-        }
-      }
-    })
+    name: 'Kurkees Peanut Butter Products',
+    description: 'Product list and current jar prices from Kurkees Sri Lanka.',
+    url: `${siteUrl}/products`,
+    numberOfItems: products.length,
+    itemListElement: products.map((product, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${siteUrl}/products/${product.slug}`,
+      item: productJsonLd(product, siteUrl),
+    })),
+  }
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Where can I see current Kurkees prices?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Prices depend on the flavour and jar size. Product cards show the starting price, and each product page shows available sizes and current prices.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Can I order peanut butter online in Sri Lanka?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes. Choose a jar, add it to the basket and checkout on the website. WhatsApp is available for quick questions before ordering.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Which Kurkees peanut butter should I choose?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Choose smooth peanut butter for easy spreading, crunchy peanut butter for texture, unsalted sugar-free peanut butter for no sugar and no salt, and Chocofeda for a chocolate peanut spread.',
+        },
+      },
+    ],
   }
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productListJsonLd) }}
+        dangerouslySetInnerHTML={jsonLdScript(productListJsonLd)}
       />
-      <ProductsClient initialProducts={dynamicProducts} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(faqJsonLd)}
+      />
+      <ProductsClient initialProducts={products} />
     </>
   )
 }

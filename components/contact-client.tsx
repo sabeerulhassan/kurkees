@@ -12,7 +12,7 @@ import {
 const faqs = [
   {
     q: 'How do I place an order?',
-    a: 'Simply browse our products and click "Order on WhatsApp", or message us on Instagram (@kurkeescom) or Facebook (kurkees). Let us know your choice of jars, delivery address, and contact number.',
+    a: 'Browse our products, add your jars to the basket and checkout on the website. You can also message us on WhatsApp, Instagram or Facebook if you want help before ordering.',
   },
   {
     q: 'What are your delivery charges?',
@@ -28,7 +28,7 @@ const faqs = [
   },
   {
     q: 'Are your peanut butters really sugar-free?',
-    a: 'Our Classic Creamy and Crunchy jars contain a small touch of sugar and salt. Our Pure Sugar-Free ranges contain zero added sugar, while our Unsalted & Sugar-Free contains strictly 100% peanuts.',
+    a: 'Our Classic Smooth and Crunchy jars contain sugar and salt. Our sugar-free ranges contain no added sugar, and our Unsalted Sugar-Free Smooth jar is made with roasted peanuts only.',
   },
 ]
 
@@ -39,20 +39,20 @@ export function ContactClient() {
     <div className="grid gap-8 lg:grid-cols-5">
       {/* Form */}
       <div className="lg:col-span-3">
-        <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-amber-900/10 bg-white p-6 shadow-sm sm:p-8">
           {sent ? (
             <div className="flex flex-col items-center gap-4 py-12 text-center">
               <CheckCircle2 className="h-14 w-14 text-emerald-600 animate-bounce" />
-              <h2 className="font-heading text-2xl font-bold text-stone-900">
+              <h2 className="font-heading text-2xl font-bold text-[#3a210f]">
                 Inquiry Sent!
               </h2>
               <p className="max-w-sm font-sans text-sm text-stone-500">
-                Thank you. We will reach out to you on WhatsApp or your email shortly to finalize your order details.
+                Thank you. We will reach out to you shortly to help with your question or order details.
               </p>
               <button
                 type="button"
                 onClick={() => setSent(false)}
-                className="mt-2 rounded-full border border-stone-200 bg-stone-50 hover:bg-stone-100 px-6 py-3 font-sans text-xs font-bold uppercase tracking-wider text-stone-600"
+                className="mt-2 rounded-full border border-amber-900/10 bg-[#fff7e8] hover:bg-[#fff3cf] px-6 py-3 font-sans text-xs font-bold uppercase tracking-wider text-stone-600"
               >
                 Send another message
               </button>
@@ -65,8 +65,8 @@ export function ContactClient() {
               }}
               className="flex flex-col gap-5"
             >
-              <h2 className="font-heading text-xl font-bold text-stone-900">
-                Quick Order / Message
+              <h2 className="font-heading text-xl font-bold text-[#3a210f]">
+                Quick message
               </h2>
               <Field label="Name" htmlFor="name">
                 <input
@@ -74,7 +74,7 @@ export function ContactClient() {
                   name="name"
                   required
                   placeholder="Your Name"
-                  className="h-11 w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 font-sans text-sm outline-none focus:border-amber-600 focus:bg-white focus:ring-1 focus:ring-amber-600 transition-all"
+                  className="h-11 w-full rounded-xl border border-amber-900/10 bg-[#fff7e8]/50 px-4 font-sans text-sm outline-none focus:border-[#8a4b19] focus:bg-white focus:ring-1 focus:ring-amber-600 transition-all"
                 />
               </Field>
               <Field label="WhatsApp / Contact Number" htmlFor="phone">
@@ -83,24 +83,24 @@ export function ContactClient() {
                   name="phone"
                   required
                   placeholder="e.g., 0777278378"
-                  className="h-11 w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 font-sans text-sm outline-none focus:border-amber-600 focus:bg-white focus:ring-1 focus:ring-amber-600 transition-all"
+                  className="h-11 w-full rounded-xl border border-amber-900/10 bg-[#fff7e8]/50 px-4 font-sans text-sm outline-none focus:border-[#8a4b19] focus:bg-white focus:ring-1 focus:ring-amber-600 transition-all"
                 />
               </Field>
-              <Field label="Your Message / Order details" htmlFor="message">
+              <Field label="Your message" htmlFor="message">
                 <textarea
                   id="message"
                   name="message"
                   required
                   rows={4}
-                  placeholder="List the jars you want to buy along with your delivery city..."
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-3 font-sans text-sm outline-none focus:border-amber-600 focus:bg-white focus:ring-1 focus:ring-amber-600 transition-all"
+                  placeholder="Ask about a product, delivery, COD or anything you want clarified..."
+                  className="w-full rounded-xl border border-amber-900/10 bg-[#fff7e8]/50 px-4 py-3 font-sans text-sm outline-none focus:border-[#8a4b19] focus:bg-white focus:ring-1 focus:ring-amber-600 transition-all"
                 />
               </Field>
               <button
                 type="submit"
-                className="mt-2 rounded-full bg-amber-700 hover:bg-amber-800 text-white px-8 py-3.5 font-heading text-base font-bold shadow-sm"
+                className="mt-2 rounded-full bg-[#5b2f17] hover:bg-[#4a2512] text-white px-8 py-3.5 font-heading text-base font-bold shadow-sm"
               >
-                Submit Request
+                Send message
               </button>
             </form>
           )}
@@ -109,8 +109,8 @@ export function ContactClient() {
 
       {/* FAQ Accordion - Completely redesigned to crisp high-contrast */}
       <div className="lg:col-span-2">
-        <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
-          <h2 className="font-heading text-xl font-bold text-stone-900">
+        <div className="rounded-2xl border border-amber-900/10 bg-white p-6 shadow-sm sm:p-8">
+          <h2 className="font-heading text-xl font-bold text-[#3a210f]">
             Quick answers
           </h2>
           <Accordion className="mt-4">
@@ -120,7 +120,7 @@ export function ContactClient() {
                 value={`item-${i}`}
                 className="border-b border-stone-100"
               >
-                <AccordionTrigger className="text-left font-sans text-sm font-bold text-stone-850 hover:no-underline">
+                <AccordionTrigger className="text-left font-sans text-sm font-bold text-stone-800 hover:no-underline">
                   {faq.q}
                 </AccordionTrigger>
                 <AccordionContent className="font-sans text-xs leading-relaxed text-stone-500">

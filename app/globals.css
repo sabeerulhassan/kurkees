@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: var(--font-fredoka), 'Fredoka Fallback';
-  --font-sans: var(--font-nunito), 'Nunito Fallback';
-  --font-mono: var(--font-geist-mono), 'Geist Mono Fallback';
+  --font-heading: var(--font-fredoka), 'Fredoka Fallback', ui-rounded, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), 'Plus Jakarta Sans Fallback', system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -56,90 +56,98 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+
 :root {
-  /* Light sky blue base, warm peanut tones, bold red accent */
-  --background: oklch(0.97 0.025 230);
-  --foreground: oklch(0.28 0.06 50);
-  --card: oklch(0.99 0.01 90);
-  --card-foreground: oklch(0.28 0.06 50);
-  --popover: oklch(0.99 0.01 90);
-  --popover-foreground: oklch(0.28 0.06 50);
-  --primary: oklch(0.58 0.22 25);
-  --primary-foreground: oklch(0.99 0.01 90);
-  --secondary: oklch(0.82 0.09 230);
-  --secondary-foreground: oklch(0.28 0.08 250);
-  --muted: oklch(0.93 0.03 90);
-  --muted-foreground: oklch(0.5 0.05 60);
-  --accent: oklch(0.72 0.12 65);
-  --accent-foreground: oklch(0.25 0.06 50);
-  --destructive: oklch(0.58 0.22 25);
-  --border: oklch(0.88 0.03 230);
-  --input: oklch(0.88 0.03 230);
-  --ring: oklch(0.58 0.22 25);
+  /* Phase 7: confident food-brand palette inspired by classic peanut butter sites, but Kurkees-owned */
+  --background: oklch(0.992 0.006 85);
+  --foreground: oklch(0.19 0.055 42);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.19 0.055 42);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.19 0.055 42);
+  --primary: oklch(0.49 0.19 29);
+  --primary-foreground: oklch(0.995 0.006 90);
+  --secondary: oklch(0.55 0.13 255);
+  --secondary-foreground: oklch(0.99 0.006 90);
+  --muted: oklch(0.955 0.018 78);
+  --muted-foreground: oklch(0.45 0.048 55);
+  --accent: oklch(0.84 0.16 82);
+  --accent-foreground: oklch(0.2 0.055 42);
+  --destructive: oklch(0.56 0.2 28);
+  --border: oklch(0.83 0.04 70);
+  --input: oklch(0.88 0.026 70);
+  --ring: oklch(0.49 0.19 29);
 
-  --cream: oklch(0.97 0.025 95);
-  --sky: oklch(0.85 0.08 230);
-  --sky-foreground: oklch(0.3 0.08 250);
-  --peanut: oklch(0.58 0.1 65);
-  --peanut-foreground: oklch(0.98 0.01 90);
-  --tan: oklch(0.8 0.07 75);
+  --cream: oklch(0.985 0.016 80);
+  --sky: oklch(0.55 0.13 255);
+  --sky-foreground: oklch(0.99 0.006 90);
+  --peanut: oklch(0.72 0.14 76);
+  --peanut-foreground: oklch(0.2 0.055 42);
+  --tan: oklch(0.93 0.055 77);
 
-  --chart-1: oklch(0.58 0.22 25);
-  --chart-2: oklch(0.7 0.13 230);
-  --chart-3: oklch(0.65 0.12 65);
-  --chart-4: oklch(0.8 0.1 90);
-  --chart-5: oklch(0.5 0.08 250);
-  --radius: 1rem;
-  --sidebar: oklch(0.97 0.025 230);
-  --sidebar-foreground: oklch(0.28 0.06 50);
-  --sidebar-primary: oklch(0.58 0.22 25);
-  --sidebar-primary-foreground: oklch(0.99 0.01 90);
-  --sidebar-accent: oklch(0.82 0.09 230);
-  --sidebar-accent-foreground: oklch(0.28 0.08 250);
-  --sidebar-border: oklch(0.88 0.03 230);
-  --sidebar-ring: oklch(0.58 0.22 25);
+  --brand-red: #bf181d;
+  --brand-yellow: #ffd33d;
+  --brand-blue: #326fc2;
+  --brand-brown: #4a2c08;
+  --brand-cream: #fffaf1;
+  --brand-white: #fffdfa;
+
+  --chart-1: oklch(0.49 0.19 29);
+  --chart-2: oklch(0.55 0.13 255);
+  --chart-3: oklch(0.84 0.16 82);
+  --chart-4: oklch(0.66 0.12 63);
+  --chart-5: oklch(0.34 0.08 45);
+  --radius: 1.3rem;
+  --sidebar: oklch(0.992 0.006 85);
+  --sidebar-foreground: oklch(0.19 0.055 42);
+  --sidebar-primary: oklch(0.49 0.19 29);
+  --sidebar-primary-foreground: oklch(0.995 0.006 90);
+  --sidebar-accent: oklch(0.55 0.13 255);
+  --sidebar-accent-foreground: oklch(0.99 0.006 90);
+  --sidebar-border: oklch(0.83 0.04 70);
+  --sidebar-ring: oklch(0.49 0.19 29);
 }
 
 .dark {
-  --background: oklch(0.25 0.04 250);
-  --foreground: oklch(0.96 0.02 90);
-  --card: oklch(0.3 0.04 250);
-  --card-foreground: oklch(0.96 0.02 90);
-  --popover: oklch(0.3 0.04 250);
-  --popover-foreground: oklch(0.96 0.02 90);
-  --primary: oklch(0.62 0.21 25);
-  --primary-foreground: oklch(0.98 0.01 90);
-  --secondary: oklch(0.4 0.07 250);
-  --secondary-foreground: oklch(0.96 0.02 90);
-  --muted: oklch(0.35 0.04 250);
-  --muted-foreground: oklch(0.75 0.04 90);
-  --accent: oklch(0.6 0.11 65);
-  --accent-foreground: oklch(0.98 0.01 90);
-  --destructive: oklch(0.62 0.21 25);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.62 0.21 25);
+  --background: oklch(0.19 0.055 48);
+  --foreground: oklch(0.96 0.025 88);
+  --card: oklch(0.23 0.055 48);
+  --card-foreground: oklch(0.96 0.025 88);
+  --popover: oklch(0.23 0.055 48);
+  --popover-foreground: oklch(0.96 0.025 88);
+  --primary: oklch(0.7 0.13 65);
+  --primary-foreground: oklch(0.19 0.055 48);
+  --secondary: oklch(0.34 0.07 220);
+  --secondary-foreground: oklch(0.96 0.025 88);
+  --muted: oklch(0.28 0.045 48);
+  --muted-foreground: oklch(0.78 0.03 88);
+  --accent: oklch(0.76 0.13 75);
+  --accent-foreground: oklch(0.19 0.055 48);
+  --destructive: oklch(0.62 0.2 28);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.76 0.13 75);
 
-  --cream: oklch(0.35 0.04 250);
-  --sky: oklch(0.5 0.09 230);
-  --sky-foreground: oklch(0.96 0.02 90);
-  --peanut: oklch(0.55 0.1 65);
-  --peanut-foreground: oklch(0.98 0.01 90);
-  --tan: oklch(0.5 0.07 75);
+  --cream: oklch(0.24 0.055 48);
+  --sky: oklch(0.34 0.07 220);
+  --sky-foreground: oklch(0.96 0.025 88);
+  --peanut: oklch(0.72 0.13 70);
+  --peanut-foreground: oklch(0.19 0.055 48);
+  --tan: oklch(0.48 0.07 65);
 
-  --chart-1: oklch(0.62 0.21 25);
-  --chart-2: oklch(0.7 0.13 230);
-  --chart-3: oklch(0.65 0.12 65);
-  --chart-4: oklch(0.8 0.1 90);
-  --chart-5: oklch(0.6 0.08 250);
-  --sidebar: oklch(0.25 0.04 250);
-  --sidebar-foreground: oklch(0.96 0.02 90);
-  --sidebar-primary: oklch(0.62 0.21 25);
-  --sidebar-primary-foreground: oklch(0.98 0.01 90);
-  --sidebar-accent: oklch(0.4 0.07 250);
-  --sidebar-accent-foreground: oklch(0.96 0.02 90);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.62 0.21 25);
+  --chart-1: oklch(0.7 0.13 65);
+  --chart-2: oklch(0.6 0.1 220);
+  --chart-3: oklch(0.76 0.13 75);
+  --chart-4: oklch(0.62 0.12 45);
+  --chart-5: oklch(0.82 0.08 92);
+  --sidebar: oklch(0.19 0.055 48);
+  --sidebar-foreground: oklch(0.96 0.025 88);
+  --sidebar-primary: oklch(0.7 0.13 65);
+  --sidebar-primary-foreground: oklch(0.19 0.055 48);
+  --sidebar-accent: oklch(0.34 0.07 220);
+  --sidebar-accent-foreground: oklch(0.96 0.025 88);
+  --sidebar-border: oklch(1 0 0 / 14%);
+  --sidebar-ring: oklch(0.76 0.13 75);
 }
 
 @layer base {
@@ -148,11 +156,115 @@
   }
   body {
     @apply bg-background text-foreground;
+    background: var(--background);
   }
   html {
     @apply font-sans;
   }
   h1, h2, h3, h4, h5 {
-    @apply font-heading;
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  .brand-logo svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .kurkees-page {
+    background:
+      radial-gradient(circle at 8% 7rem, color-mix(in oklab, var(--accent) 24%, transparent), transparent 18rem),
+      radial-gradient(circle at 96% 20rem, color-mix(in oklab, var(--secondary) 12%, transparent), transparent 22rem),
+      var(--background);
+  }
+
+  .brand-kicker {
+    @apply inline-flex items-center gap-2 rounded-full px-4 py-2 font-sans text-[11px] font-extrabold uppercase tracking-[0.18em];
+    background: var(--brand-yellow);
+    color: var(--brand-brown);
+    box-shadow: 0 3px 0 rgba(74, 44, 8, 0.22);
+  }
+
+  .brand-headline {
+    @apply font-heading font-bold tracking-tight;
+    color: var(--brand-brown);
+    text-wrap: balance;
+  }
+
+  .brand-copy {
+    @apply font-sans leading-relaxed text-muted-foreground;
+  }
+
+  .brand-panel {
+    @apply relative overflow-hidden rounded-[2rem] border bg-white;
+    border-color: color-mix(in oklab, var(--brand-brown) 16%, transparent);
+    box-shadow: 0 12px 0 color-mix(in oklab, var(--brand-brown) 12%, transparent);
+  }
+
+  .brand-panel-blue {
+    @apply relative overflow-hidden rounded-[2rem];
+    background: var(--brand-blue);
+    color: white;
+    box-shadow: 0 14px 0 color-mix(in oklab, var(--brand-brown) 18%, transparent);
+  }
+
+  .brand-panel-yellow {
+    @apply relative overflow-hidden rounded-[2rem];
+    background: var(--brand-yellow);
+    color: var(--brand-brown);
+    box-shadow: 0 14px 0 color-mix(in oklab, var(--brand-brown) 18%, transparent);
+  }
+
+  .brand-button-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 font-heading text-base font-bold text-white transition-transform hover:-translate-y-1;
+    background: var(--brand-red);
+    box-shadow: 0 5px 0 color-mix(in oklab, var(--brand-brown) 70%, black);
+  }
+
+  .brand-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 px-7 py-3.5 font-heading text-base font-bold transition-transform hover:-translate-y-1;
+    border-color: var(--brand-brown);
+    color: var(--brand-brown);
+    background: white;
+    box-shadow: 0 4px 0 color-mix(in oklab, var(--brand-brown) 18%, transparent);
+  }
+
+  .brand-chip {
+    @apply inline-flex items-center rounded-full px-3 py-1 font-sans text-[11px] font-extrabold uppercase tracking-[0.14em];
+    background: color-mix(in oklab, var(--brand-yellow) 72%, white);
+    color: var(--brand-brown);
+  }
+
+  .brand-image-card {
+    @apply relative overflow-hidden rounded-[2rem] border bg-white;
+    border-color: color-mix(in oklab, var(--brand-brown) 14%, transparent);
+    box-shadow: 0 10px 0 color-mix(in oklab, var(--brand-brown) 10%, transparent);
+  }
+
+  .spread-swoosh {
+    position: absolute;
+    width: 22rem;
+    height: 8rem;
+    border-radius: 999px 999px 999px 40px;
+    background: linear-gradient(135deg, #d88a2b, #8b4a18 70%);
+    transform: rotate(-12deg);
+    opacity: 0.92;
+  }
+
+  .section-blue {
+    background: var(--brand-blue);
+    color: white;
+  }
+
+  .section-yellow {
+    background: var(--brand-yellow);
+    color: var(--brand-brown);
+  }
+
+  .section-red {
+    background: var(--brand-red);
+    color: white;
   }
 }

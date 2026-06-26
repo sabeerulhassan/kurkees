@@ -1,232 +1,260 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Leaf as LeafIcon, Ban, Dumbbell, Sparkles } from 'lucide-react'
+import { ArrowRight, MessageCircle, ShoppingBag, ShieldCheck, Sparkles, Truck } from 'lucide-react'
+import type { Metadata } from 'next'
 import { products } from '@/lib/data'
+import { featuredCollectionLinks } from '@/lib/collections'
 import { getBlogPosts } from '@/lib/notion'
 import { ProductCard } from '@/components/product-card'
+import { getApiProducts } from '@/lib/api-products'
 import { Testimonials } from '@/components/testimonials'
-import { Star, Peanut, Squiggle, Spark, Leaf } from '@/components/doodles'
+import { FoodMomentMosaic, PeanutPattern, ProductJarCluster, ProductStrip } from '@/components/brand-visuals'
+import { jsonLdScript } from '@/lib/json-ld'
 
 const benefits = [
-  { icon: LeafIcon, title: 'All Natural', desc: 'Just roasted peanuts. Nothing artificial, ever.' },
-  { icon: Ban, title: '0% Added Sugar', desc: 'Sweetened by nature, not by us.' },
-  { icon: Dumbbell, title: '8g Protein', desc: 'A protein punch in every single scoop.' },
-  { icon: Sparkles, title: 'High Protein', desc: 'Fuel your day the delicious way.' },
+  { title: 'Local peanuts', text: 'Built around peanuts sourced for Sri Lankan homes and daily food habits.' },
+  { title: 'Real choices', text: 'Smooth, crunchy, unsalted, sugar-free, spicy and chocolate styles in one family.' },
+  { title: 'Easy checkout', text: 'Choose your jar online. WhatsApp stays there for quick clarification only.' },
 ]
+
+export const metadata: Metadata = {
+  title: 'Kurkees Peanut Butter | Local Peanut Spreads',
+  description:
+    'Shop Kurkees jars in Sri Lanka. Choose smooth, crunchy, sugar-free, unsalted and chocolate peanut spreads with clear prices and easy website checkout.',
+  alternates: {
+    canonical: '/',
+  },
+}
 
 export const revalidate = 60
 
 export default async function HomePage() {
-  const blogPosts = await getBlogPosts()
+  const [blogPosts, apiProducts] = await Promise.all([getBlogPosts(), getApiProducts()])
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kurkees.com'
 
-  // Structured Data (JSON-LD) for Search Engine Brand Identification
   const orgJsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'Organization',
         '@id': `${siteUrl}/#organization`,
-        'name': 'Kurkees',
-        'url': siteUrl,
-        'logo': {
+        name: 'Kurkees',
+        url: siteUrl,
+        logo: {
           '@type': 'ImageObject',
-          'url': `${siteUrl}/hero-jar.png`,
-          'caption': 'Kurkees Peanut Butter'
+          url: `${siteUrl}/hero-jar.png`,
+          caption: 'Kurkees Peanut Butter',
         },
-        'sameAs': [
-          'https://instagram.com/kurkees',
-        ]
+        sameAs: [
+          'https://instagram.com/kurkeescom',
+          'https://facebook.com/kurkees',
+          'https://tiktok.com/@kurkeescom',
+        ],
       },
       {
         '@type': 'WebSite',
         '@id': `${siteUrl}/#website`,
-        'url': siteUrl,
-        'name': 'Kurkees',
-        'description': 'All-natural, high-protein peanut butter with 0% added sugar.',
-        'publisher': {
-          '@id': `${siteUrl}/#organization`
-        }
-      }
-    ]
+        url: siteUrl,
+        name: 'Kurkees',
+        description: 'Local Sri Lankan peanut spreads with smooth, crunchy, sugar-free, unsalted and chocolate options.',
+        publisher: {
+          '@id': `${siteUrl}/#organization`,
+        },
+      },
+    ],
   }
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
-      />
-      
-      <main className="overflow-hidden">
-        {/* Hero */}
-        <section className="relative bg-background">
-          <Peanut className="pointer-events-none absolute left-4 top-24 h-16 w-28 text-tan" />
-          <Star className="pointer-events-none absolute right-6 top-16 h-10 w-10 text-primary" />
-          <Spark className="pointer-events-none absolute left-1/2 top-10 h-8 w-8 text-accent" />
-          <Leaf className="pointer-events-none absolute bottom-10 left-10 h-12 w-12 text-secondary" />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(orgJsonLd)} />
 
-          <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:py-20">
-            <div className="text-center lg:text-left">
-              <span className="inline-flex items-center gap-2 rounded-full bg-sky px-4 py-2 font-sans text-sm font-bold text-sky-foreground">
-                <Sparkles className="h-4 w-4" /> New: Spicy Fiesta is here
-              </span>
-              <h1 className="mt-5 text-balance font-heading text-5xl font-bold leading-[0.95] text-foreground sm:text-6xl lg:text-7xl">
-                Peanut Goodness in Every Scoop
+      <main className="kurkees-page overflow-hidden">
+        <section className="relative overflow-hidden bg-white">
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-[var(--brand-yellow)]" />
+          <PeanutPattern className="pointer-events-none absolute -right-20 top-12 h-44 w-[520px] text-[var(--brand-blue)]" />
+          <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:py-20">
+            <div className="relative z-10 text-center lg:text-left">
+              <span className="brand-kicker"><Sparkles className="h-4 w-4" /> Local jars, louder flavour</span>
+              <h1 className="brand-headline mt-6 text-5xl leading-[0.88] sm:text-7xl lg:text-8xl">
+                Peanut butter made to be used, not hidden.
               </h1>
-              <p className="mx-auto mt-5 max-w-md text-pretty font-sans text-lg leading-relaxed text-muted-foreground lg:mx-0">
-                All-natural, high-protein peanut butter with zero added sugar.
-                Bold flavors, smooth texture, and a whole lot of crunch.
+              <p className="brand-copy mx-auto mt-6 max-w-xl text-lg sm:text-xl lg:mx-0">
+                Smooth, crunchy, pure, spicy and chocolate peanut spreads for breakfast, lunchboxes, smoothies and snacks around real Sri Lankan homes.
               </p>
               <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
-                <Link
-                  href="/products"
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 font-heading text-lg font-bold text-primary-foreground shadow-[0_5px_0_0_oklch(0.45_0.2_25)] transition-transform hover:-translate-y-1 sm:w-auto"
-                >
-                  Shop Now <ArrowRight className="h-5 w-5" />
+                <Link href="/products" className="brand-button-primary w-full sm:w-auto">
+                  Shop jars online <ArrowRight className="h-5 w-5" />
                 </Link>
-                <Link
-                  href="/about"
-                  className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-foreground px-8 py-4 font-heading text-lg font-bold text-foreground transition-colors hover:bg-foreground hover:text-background sm:w-auto"
+                <a
+                  href="https://wa.me/94777278378?text=Hi%20Kurkees%2C%20I%20have%20a%20quick%20question%20before%20ordering%20from%20the%20website."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="brand-button-secondary w-full sm:w-auto"
                 >
-                  Our Story
-                </Link>
+                  <MessageCircle className="h-5 w-5" /> Ask before ordering
+                </a>
+              </div>
+              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                {benefits.map((item) => (
+                  <div key={item.title} className="rounded-[1.35rem] border border-[var(--brand-brown)]/10 bg-white p-4 text-left shadow-sm">
+                    <p className="font-heading text-lg font-bold text-[var(--brand-brown)]">{item.title}</p>
+                    <p className="mt-1 font-sans text-xs font-semibold leading-relaxed text-stone-600">{item.text}</p>
+                  </div>
+                ))}
               </div>
             </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 m-auto h-72 w-72 rounded-full bg-sky/60 blur-2xl sm:h-96 sm:w-96" />
-              <div className="relative mx-auto aspect-square max-w-md rounded-[3rem] border-2 border-border bg-card shadow-[0_10px_0_0_var(--border)]">
-                <Image
-                  src="/hero-jar.png"
-                  alt="A jar of Kurkees peanut butter with a wooden spoon scooping creamy peanut butter"
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 90vw, 40vw"
-                  className="object-contain p-6"
-                />
-              </div>
+            <div className="relative z-10">
+              <ProductJarCluster />
             </div>
           </div>
-          <Squiggle className="mx-auto h-8 w-40 text-accent" />
         </section>
 
-        {/* Benefits */}
-        <section className="bg-sky py-16 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="text-center">
-              <h2 className="text-balance font-heading text-3xl font-bold text-sky-foreground sm:text-4xl">
-                Good stuff in. Nonsense out.
+        <ProductStrip />
+
+        <section className="section-blue relative overflow-hidden py-16 sm:py-20">
+          <div className="absolute -left-16 -top-16 h-56 w-56 rounded-full bg-[var(--brand-yellow)]/30" />
+          <div className="absolute -right-16 bottom-10 h-64 w-64 rounded-full bg-white/10" />
+          <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <span className="rounded-full bg-white/16 px-4 py-2 font-sans text-[11px] font-extrabold uppercase tracking-[0.18em] text-white">How people use it</span>
+              <h2 className="mt-5 font-heading text-4xl font-bold leading-none text-white sm:text-6xl">
+                Not just a jar. A daily food habit.
               </h2>
-              <p className="mx-auto mt-3 max-w-lg font-sans text-sky-foreground/80">
-                Every jar is packed with the things that matter and none of the
-                things that don&apos;t.
+              <p className="mt-5 max-w-lg font-sans text-base font-medium leading-relaxed text-white/82">
+                Kurkees jars are made for everyday moments: breakfast, fruit, oats, roti, smoothies and weekend treats.
               </p>
-            </div>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {benefits.map((b) => (
-                <div
-                  key={b.title}
-                  className="flex flex-col items-center rounded-3xl border-2 border-border bg-card p-6 text-center shadow-[0_6px_0_0_var(--border)]"
-                >
-                  <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                    <b.icon className="h-8 w-8" />
-                  </span>
-                  <h3 className="mt-4 font-heading text-xl font-bold text-card-foreground">
-                    {b.title}
-                  </h3>
-                  <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">
-                    {b.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Products preview */}
-        <section className="bg-background py-16 sm:py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-              <div>
-                <span className="font-sans text-sm font-bold uppercase tracking-wide text-primary">
-                  Our Jars
-                </span>
-                <h2 className="mt-1 font-heading text-3xl font-bold text-foreground sm:text-4xl">
-                  Pick your flavor
-                </h2>
-              </div>
-              <Link
-                href="/products"
-                className="flex items-center gap-2 rounded-full border-2 border-foreground px-5 py-2.5 font-sans font-bold text-foreground transition-colors hover:bg-foreground hover:text-background"
-              >
-                View all <ArrowRight className="h-4 w-4" />
+              <Link href="/about" className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 font-heading text-base font-bold text-[var(--brand-blue)] transition-transform hover:-translate-y-1">
+                See our story <ArrowRight className="h-5 w-5" />
               </Link>
             </div>
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {products.slice(0, 4).map((p) => (
-                <ProductCard key={p.slug} product={p} />
-              ))}
-            </div>
+            <FoodMomentMosaic />
           </div>
         </section>
 
-        {/* Recipes / blog teaser */}
-        <section className="relative bg-tan/40 py-16 sm:py-20">
-          <Peanut className="pointer-events-none absolute right-6 top-10 h-14 w-24 text-primary/40" />
+        <section className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="text-center">
-              <span className="font-sans text-sm font-bold uppercase tracking-wide text-primary">
-                From the Kitchen
-              </span>
-              <h2 className="mt-1 text-balance font-heading text-3xl font-bold text-foreground sm:text-4xl">
-                Recipes & ramblings
-              </h2>
+            <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
+              <div className="max-w-2xl">
+                <span className="brand-kicker">Pick your flavour</span>
+                <h2 className="brand-headline mt-4 text-4xl leading-none sm:text-6xl">Choose your Kurkees jar</h2>
+                <p className="brand-copy mt-4 text-base">
+                  Compare smooth, crunchy, pure, spicy and chocolate jars, then choose the size that fits your home.
+                </p>
+              </div>
+              <Link href="/products" className="brand-button-secondary">
+                View price list <ArrowRight className="h-5 w-5" />
+              </Link>
             </div>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {blogPosts.slice(0, 3).map((post) => (
+            {apiProducts.length > 0 ? (
+              <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {apiProducts.slice(0, 4).map((p) => (
+                  <ProductCard key={p.slug} product={p} />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-10 rounded-[2rem] border border-dashed border-[var(--brand-brown)]/20 bg-white p-8 text-center font-sans text-sm font-semibold text-stone-600">
+                No products are listed right now. Please contact Kurkees if you need help choosing a jar today.
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="section-yellow py-16 sm:py-20">
+          <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[0.75fr_1.25fr]">
+            <div>
+              <span className="rounded-full bg-white px-4 py-2 font-sans text-[11px] font-extrabold uppercase tracking-[0.18em] text-[var(--brand-brown)]">Guided shopping</span>
+              <h2 className="mt-5 font-heading text-4xl font-bold leading-none sm:text-6xl">Find the right jar without guessing.</h2>
+              <p className="mt-4 font-sans text-base font-semibold leading-relaxed text-[var(--brand-brown)]/78">
+                Simple buying guides help you choose by texture, sweetness, chocolate flavour, protein needs and jar price.
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {featuredCollectionLinks.map((item) => (
                 <Link
-                  key={post.slug}
-                  href={`/blog/${post.slug}`}
-                  className="group flex flex-col overflow-hidden rounded-3xl border-2 border-border bg-card shadow-[0_6px_0_0_var(--border)] transition-transform hover:-translate-y-1"
+                  key={item.href}
+                  href={item.href}
+                  className="group flex items-center justify-between rounded-[1.5rem] bg-white px-5 py-5 font-heading text-xl font-bold text-[var(--brand-brown)] shadow-[0_6px_0_rgba(74,44,8,.14)] transition-transform hover:-translate-y-1"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img
-                      src={post.image || '/placeholder.svg'}
-                      alt={post.title}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <span className="absolute left-3 top-3 rounded-full bg-primary px-3 py-1 font-sans text-xs font-bold text-primary-foreground">
-                      {post.category}
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col p-5">
-                    <h3 className="font-heading text-xl font-bold text-card-foreground">
-                      {post.title}
-                    </h3>
-                    <p className="mt-2 flex-1 font-sans text-sm leading-relaxed text-muted-foreground line-clamp-2">
-                      {post.excerpt}
-                    </p>
-                    <span className="mt-4 flex items-center gap-1 font-sans font-bold text-primary">
-                      Read more <ArrowRight className="h-4 w-4" />
-                    </span>
-                  </div>
+                  <span>{item.label}</span>
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="bg-background py-16 sm:py-20">
+        {blogPosts.length > 0 && (
+          <section className="bg-white py-16 sm:py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <div className="text-center">
+                <span className="brand-kicker">From the kitchen</span>
+                <h2 className="brand-headline mx-auto mt-4 max-w-3xl text-4xl leading-none sm:text-6xl">Ideas for your next spoonful</h2>
+              </div>
+              <div className="mt-10 grid gap-6 md:grid-cols-3">
+                {blogPosts.slice(0, 3).map((post) => (
+                  <Link
+                    key={post.slug}
+                    href={`/blog/${post.slug}`}
+                    className="group brand-image-card flex flex-col transition-transform hover:-translate-y-1"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden bg-[var(--brand-yellow)]/35">
+                      <Image
+                        src={post.image || '/placeholder.svg'}
+                        alt={post.title}
+                        fill
+                        sizes="(max-width: 768px) 92vw, 30vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                      />
+                      <span className="absolute left-4 top-4 rounded-full bg-[var(--brand-red)] px-3 py-1 font-sans text-xs font-bold text-white">
+                        {post.category}
+                      </span>
+                    </div>
+                    <div className="flex flex-1 flex-col p-6">
+                      <h3 className="font-heading text-2xl font-bold leading-tight text-[var(--brand-brown)]">{post.title}</h3>
+                      <p className="mt-3 line-clamp-2 flex-1 font-sans text-sm leading-relaxed text-stone-600">{post.excerpt}</p>
+                      <span className="mt-5 flex items-center gap-1 font-heading font-bold text-[var(--brand-red)]">
+                        Read more <ArrowRight className="h-4 w-4" />
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        <section className="section-red py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+              <div>
+                <span className="rounded-full bg-white/18 px-4 py-2 font-sans text-[11px] font-extrabold uppercase tracking-[0.18em] text-white">Why it feels better</span>
+                <h2 className="mt-5 font-heading text-4xl font-bold leading-none text-white sm:text-6xl">Bold, warm, shelf-ready.</h2>
+                <p className="mt-4 font-sans text-base font-medium leading-relaxed text-white/82">
+                  Kurkees should look like a confident food brand, not a generic local website. Bigger visuals, fewer boxes, stronger movement and real product moments.
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {[
+                  { icon: ShoppingBag, title: 'Website first', text: 'Basket and checkout stay the main order path.' },
+                  { icon: MessageCircle, title: 'WhatsApp help', text: 'Quick clarifications only, not the main CTA.' },
+                  { icon: ShieldCheck, title: 'Clear trust', text: 'Ingredients, storage and delivery stay easy to find.' },
+                ].map((item) => (
+                  <div key={item.title} className="rounded-[1.5rem] bg-white p-6 text-[var(--brand-brown)] shadow-[0_8px_0_rgba(74,44,8,.18)]">
+                    <item.icon className="h-8 w-8 text-[var(--brand-red)]" />
+                    <h3 className="mt-4 font-heading text-2xl font-bold leading-none">{item.title}</h3>
+                    <p className="mt-3 font-sans text-sm font-semibold leading-relaxed text-stone-600">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <div className="text-center">
-              <span className="font-sans text-sm font-bold uppercase tracking-wide text-primary">
-                Spreading Joy
-              </span>
-              <h2 className="mt-1 font-heading text-3xl font-bold text-foreground sm:text-4xl">
-                People are nuts about us
-              </h2>
+              <span className="brand-kicker">Loved locally</span>
+              <h2 className="brand-headline mt-4 text-4xl leading-none sm:text-6xl">Fresh flavour, honest value</h2>
             </div>
             <div className="mt-10">
               <Testimonials />
@@ -234,24 +262,26 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Newsletter CTA banner */}
-        <section className="bg-background pb-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="relative overflow-hidden rounded-4xl bg-primary px-6 py-14 text-center text-primary-foreground sm:px-12">
-              <Star className="pointer-events-none absolute left-8 top-8 h-10 w-10 text-primary-foreground/30" />
-              <Spark className="pointer-events-none absolute right-10 bottom-8 h-10 w-10 text-primary-foreground/30" />
-              <h2 className="mx-auto max-w-2xl text-balance font-heading text-3xl font-bold sm:text-5xl">
-                Ready to scoop up the goodness?
-              </h2>
-              <p className="mx-auto mt-4 max-w-md font-sans text-lg text-primary-foreground/90">
-                Join the Kurkees crew for tasty recipes, fresh drops, and members-only deals.
+        <section className="bg-[var(--brand-brown)] px-4 py-16 text-white sm:px-6 sm:py-20">
+          <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[1fr_0.85fr]">
+            <div>
+              <h2 className="font-heading text-5xl font-bold leading-none sm:text-7xl">Ready to bring home a jar?</h2>
+              <p className="mt-5 max-w-xl font-sans text-lg font-medium leading-relaxed text-white/76">
+                Compare jars, choose your size and checkout on the website. If you want peace of mind first, send a quick WhatsApp message.
               </p>
-              <Link
-                href="/products"
-                className="mt-8 inline-flex items-center gap-2 rounded-full bg-card px-8 py-4 font-heading text-lg font-bold text-card-foreground transition-transform hover:-translate-y-1"
-              >
-                Shop the Collection <ArrowRight className="h-5 w-5" />
-              </Link>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="/products" className="brand-button-primary bg-[var(--brand-red)]">
+                  Shop online <ArrowRight className="h-5 w-5" />
+                </Link>
+                <Link href="/faq" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 font-heading text-base font-bold text-[var(--brand-brown)] transition-transform hover:-translate-y-1">
+                  Read FAQ
+                </Link>
+              </div>
+            </div>
+            <div className="relative min-h-[320px]">
+              <Image src={products[6].image} alt="Chocofeda jar" width={230} height={320} className="absolute right-4 top-0 w-[42%] rotate-[8deg] drop-shadow-2xl" />
+              <Image src={products[0].image} alt="Kurkees smooth jar" width={260} height={340} className="absolute left-8 top-8 w-[48%] -rotate-[8deg] drop-shadow-2xl" />
+              <Image src={products[1].image} alt="Kurkees crunchy jar" width={220} height={310} className="absolute bottom-0 left-1/2 w-[38%] -translate-x-1/2 rotate-[3deg] drop-shadow-2xl" />
             </div>
           </div>
         </section>

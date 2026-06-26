@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import type { BlogPost } from '@/lib/notion'
@@ -21,11 +22,11 @@ export function BlogClient({ initialPosts }: { initialPosts: BlogPost[] }) {
   const rest = filtered.slice(1)
 
   return (
-    <main className="overflow-hidden bg-[#faf9f6]">
+    <main className="overflow-hidden bg-background">
       {/* Header - Refined to elegant Alabaster */}
-      <section className="relative border-b border-stone-200 bg-white py-14 sm:py-20">
+      <section className="relative border-b border-amber-900/10 bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6">
-          <h1 className="text-balance font-heading text-4xl font-bold text-stone-900 sm:text-6xl">
+          <h1 className="text-balance font-heading text-4xl font-bold text-[#3a210f] sm:text-6xl">
             The Kurkees Journal
           </h1>
           <p className="mx-auto mt-4 max-w-lg font-sans text-base text-stone-500">
@@ -45,8 +46,8 @@ export function BlogClient({ initialPosts }: { initialPosts: BlogPost[] }) {
               className={cn(
                 'rounded-full px-5 py-2 font-sans text-xs font-bold uppercase tracking-wider border transition-colors',
                 category === c
-                  ? 'bg-amber-50 text-amber-800 border-amber-200'
-                  : 'bg-stone-50 border-stone-150 text-stone-500 hover:bg-stone-100 hover:text-stone-900',
+                  ? 'bg-[#fff4cf] text-[#5b2f17] border-amber-200'
+                  : 'bg-[#fff7e8] border-amber-900/10 text-stone-500 hover:bg-[#fff3cf] hover:text-[#3a210f]',
               )}
             >
               {c}
@@ -58,31 +59,33 @@ export function BlogClient({ initialPosts }: { initialPosts: BlogPost[] }) {
         {featured && (
           <Link
             href={`/blog/${featured.slug}`}
-            className="group mt-10 grid overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm md:grid-cols-2"
+            className="group mt-10 grid overflow-hidden rounded-2xl border border-amber-900/10 bg-white shadow-sm md:grid-cols-2"
           >
             <div className="relative aspect-[16/10] overflow-hidden md:aspect-auto">
-              <img
+              <Image
                 src={featured.image || '/placeholder.svg'}
                 alt={featured.title}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-101"
+                fill
+                sizes="(max-width: 768px) 92vw, 50vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.01]"
               />
             </div>
             <div className="flex flex-col justify-center p-7 sm:p-10">
               <div className="flex items-center gap-3">
-                <span className="rounded-full bg-amber-50 border border-amber-100 px-3 py-0.5 font-sans text-[10px] font-bold text-amber-800 uppercase tracking-wide">
+                <span className="rounded-full bg-[#fff4cf] border border-amber-900/10 px-3 py-0.5 font-sans text-[10px] font-bold text-[#5b2f17] uppercase tracking-wide">
                   {featured.category}
                 </span>
                 <span className="font-sans text-xs text-stone-400">
                   {featured.date}
                 </span>
               </div>
-              <h2 className="mt-3 text-balance font-heading text-2xl font-bold text-stone-900 leading-tight">
+              <h2 className="mt-3 text-balance font-heading text-2xl font-bold text-[#3a210f] leading-tight">
                 {featured.title}
               </h2>
               <p className="mt-3 font-sans text-sm leading-relaxed text-stone-500 line-clamp-3">
                 {featured.excerpt}
               </p>
-              <span className="mt-5 flex items-center gap-1 font-sans text-xs font-bold text-amber-800 uppercase tracking-wider">
+              <span className="mt-5 flex items-center gap-1 font-sans text-xs font-bold text-[#5b2f17] uppercase tracking-wider">
                 Read article <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </div>
@@ -95,15 +98,17 @@ export function BlogClient({ initialPosts }: { initialPosts: BlogPost[] }) {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-amber-900/10 bg-white shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
-                <img
+                <Image
                   src={post.image || '/placeholder.svg'}
                   alt={post.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-101"
+                  fill
+                  sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.01]"
                 />
-                <span className="absolute left-3 top-3 rounded-full bg-amber-50 border border-amber-100 px-3 py-0.5 font-sans text-[10px] font-bold text-amber-800 uppercase tracking-wider">
+                <span className="absolute left-3 top-3 rounded-full bg-[#fff4cf] border border-amber-900/10 px-3 py-0.5 font-sans text-[10px] font-bold text-[#5b2f17] uppercase tracking-wider">
                   {post.category}
                 </span>
               </div>
@@ -111,13 +116,13 @@ export function BlogClient({ initialPosts }: { initialPosts: BlogPost[] }) {
                 <span className="font-sans text-[10px] font-bold text-stone-400 uppercase tracking-wider">
                   {post.date}
                 </span>
-                <h3 className="mt-1 font-heading text-lg font-bold text-stone-900 line-clamp-2">
+                <h3 className="mt-1 font-heading text-lg font-bold text-[#3a210f] line-clamp-2">
                   {post.title}
                 </h3>
                 <p className="mt-2 flex-1 font-sans text-xs leading-relaxed text-stone-500 line-clamp-2">
                   {post.excerpt}
                 </p>
-                <span className="mt-4 flex items-center gap-1 font-sans text-xs font-bold text-amber-800 uppercase tracking-wider">
+                <span className="mt-4 flex items-center gap-1 font-sans text-xs font-bold text-[#5b2f17] uppercase tracking-wider">
                   Read article <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </div>

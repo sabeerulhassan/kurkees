@@ -1,159 +1,164 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Sprout, Heart, Recycle, Award } from 'lucide-react'
+import { ArrowRight, CheckCircle, Heart, Sparkles } from 'lucide-react'
+import { FoodMomentMosaic, PeanutPattern, ProductJarCluster } from '@/components/brand-visuals'
+import { products } from '@/lib/data'
+import { getApiProductImage, getApiProducts } from '@/lib/api-products'
 
 export const metadata: Metadata = {
-  title: 'About — Kurkees',
+  title: 'About Kurkees | A Local Peanut Butter Brand',
   description:
-    'The Kurkees story: all-natural peanut butter made with love, real ingredients, and a whole lot of crunch.',
+    'Meet Kurkees, a local Sri Lankan peanut butter brand making simple jars for families, snacks, smoothies and everyday meals.',
+  alternates: {
+    canonical: '/about',
+  },
 }
 
 const values = [
-  {
-    icon: Sprout,
-    title: 'Natural Ingredients',
-    desc: 'Real roasted peanuts, never fillers, hydrogenated oils, or mystery additives.',
-  },
-  {
-    icon: Heart,
-    title: 'Made with Love',
-    desc: 'Small-batch care in every jar, blended by people who actually eat the stuff.',
-  },
-  {
-    icon: Recycle,
-    title: 'Sustainability',
-    desc: 'Recyclable jars and responsibly sourced peanuts from farmers we trust.',
-  },
-  {
-    icon: Award,
-    title: 'No Compromise',
-    desc: 'Big flavor and big nutrition. We refuse to choose between the two.',
-  },
+  'Sri Lankan peanuts and familiar local eating moments',
+  'Clear ingredients and honest product choices',
+  'Website ordering first, WhatsApp help when needed',
+  'Jars made for homes, lunchboxes, gym meals and snacks',
 ]
 
-const steps = [
-  { n: '01', title: 'Pick the peanuts', desc: 'We hand-select premium peanuts from trusted family farms.' },
-  { n: '02', title: 'Slow roast', desc: 'A gentle roast unlocks that deep, nutty flavor you love.' },
-  { n: '03', title: 'Grind fresh', desc: 'Stone-ground to your favorite texture — smooth or crunchy.' },
-  { n: '04', title: 'Jar it up', desc: 'Sealed fresh and sent straight to your pantry. No detours.' },
+const process = [
+  { n: '01', title: 'Roast', text: 'A proper roast brings out the nutty smell and warm peanut colour.' },
+  { n: '02', title: 'Grind', text: 'Smooth, crunchy and chocolate styles are made to match different homes.' },
+  { n: '03', title: 'Jar', text: 'Packed into practical jars with clear labels and easy size choices.' },
+  { n: '04', title: 'Enjoy', text: 'Spread it, blend it, spoon it, dip it or use it in everyday recipes.' },
 ]
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const apiProducts = await getApiProducts()
+
   return (
-    <main className="overflow-hidden bg-[#faf9f6]">
-      {/* Hero */}
-      <section className="relative border-b border-stone-200/60 bg-white py-14 sm:py-20">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-100 px-4 py-1.5 font-sans text-xs font-bold text-amber-800 uppercase tracking-wider">
-              Our Story
-            </span>
-            <h1 className="mt-5 text-balance font-heading text-4xl font-bold leading-tight text-stone-900 sm:text-6xl">
-              Born from a love of real peanut butter
+    <main className="kurkees-page overflow-hidden">
+      <section className="relative overflow-hidden bg-white">
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-[var(--brand-blue)]" />
+        <PeanutPattern className="pointer-events-none absolute -left-20 top-10 h-44 w-[520px] text-[var(--brand-red)]" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:py-20">
+          <div className="z-10 text-center lg:text-left">
+            <span className="brand-kicker"><Heart className="h-4 w-4" /> Our Story</span>
+            <h1 className="brand-headline mt-6 text-5xl leading-[0.88] sm:text-7xl lg:text-8xl">
+              We are a little obsessed with good peanut butter.
             </h1>
-            <p className="mt-5 text-pretty font-sans text-base leading-relaxed text-stone-600">
-              Kurkees started in a tiny kitchen with one stubborn belief: peanut
-              butter should be made from peanuts. Just peanuts. We were tired of
-              labels full of sugar and oil, so we built our own jar — packed with
-              protein, zero added sugar, and flavor that actually makes you smile.
+            <p className="brand-copy mx-auto mt-6 max-w-xl text-lg sm:text-xl lg:mx-0">
+              Kurkees started with a simple goal: make peanut butter feel easy, useful and exciting for Sri Lankan homes. Not a fancy shelf item. A jar people actually finish.
             </p>
-            <Link
-              href="/products"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-amber-700 text-white px-7 py-3 font-heading text-base font-bold shadow-sm transition-transform hover:-translate-y-0.5"
-            >
-              Taste the difference <ArrowRight className="h-5 w-5" />
-            </Link>
+            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
+              <Link href="/products" className="brand-button-primary w-full sm:w-auto">
+                Shop Kurkees jars <ArrowRight className="h-5 w-5" />
+              </Link>
+              <Link href="/delivery" className="brand-button-secondary w-full sm:w-auto">
+                How delivery works
+              </Link>
+            </div>
           </div>
-          <div className="relative">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-stone-200 shadow-sm">
-              <Image
-                src="/about-making.png"
-                alt="Roasted peanuts being ground into fresh peanut butter"
-                fill
-                priority
-                sizes="(max-width: 1024px) 90vw, 45vw"
-                className="object-cover"
-              />
+          <div className="relative z-10">
+            <ProductJarCluster />
+          </div>
+        </div>
+      </section>
+
+      <section className="section-blue py-16 sm:py-20">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr]">
+          <div>
+            <span className="rounded-full bg-white/16 px-4 py-2 font-sans text-[11px] font-extrabold uppercase tracking-[0.18em] text-white">Why we exist</span>
+            <h2 className="mt-5 font-heading text-4xl font-bold leading-none text-white sm:text-6xl">
+              Peanut butter should belong in real meals.
+            </h2>
+            <p className="mt-5 max-w-lg font-sans text-base font-medium leading-relaxed text-white/82">
+              We want Kurkees to feel close to the way people already eat: bread, roti, oats, bananas, smoothies, lunchboxes, gym meals and quick snacks after a busy day.
+            </p>
+          </div>
+          <FoodMomentMosaic />
+        </div>
+      </section>
+
+      <section className="bg-white py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+            <div>
+              <span className="brand-kicker"><Sparkles className="h-4 w-4" /> What guides us</span>
+              <h2 className="brand-headline mt-5 text-4xl leading-none sm:text-6xl">Simple jars. Big everyday use.</h2>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {values.map((value) => (
+                <div key={value} className="flex items-start gap-3 rounded-[1.5rem] border border-[var(--brand-brown)]/10 bg-[var(--brand-white)] p-5 shadow-sm">
+                  <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--brand-red)]" />
+                  <p className="font-sans text-sm font-bold leading-relaxed text-[var(--brand-brown)]">{value}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-16 sm:py-20 border-b border-stone-200/50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="text-center">
-            <h2 className="text-balance font-heading text-3xl font-bold text-stone-900 sm:text-4xl">
-              What we stand for
-            </h2>
-          </div>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {values.map((v) => (
-              <div
-                key={v.title}
-                className="flex flex-col rounded-2xl border border-stone-200 bg-white p-6 shadow-xs"
-              >
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-800 border border-amber-100">
-                  <v.icon className="h-6 w-6" />
-                </span>
-                <h3 className="mt-4 font-heading text-lg font-bold text-stone-900">
-                  {v.title}
-                </h3>
-                <p className="mt-2 font-sans text-xs leading-relaxed text-stone-500">
-                  {v.desc}
-                </p>
+      <section className="section-yellow relative overflow-hidden py-16 sm:py-20">
+        <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/38" />
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {process.map((step) => (
+              <div key={step.n} className="rounded-[2rem] bg-white p-6 text-[var(--brand-brown)] shadow-[0_8px_0_rgba(74,44,8,.12)]">
+                <span className="font-heading text-5xl font-bold text-[var(--brand-red)]">{step.n}</span>
+                <h3 className="mt-3 font-heading text-3xl font-bold leading-none">{step.title}</h3>
+                <p className="mt-3 font-sans text-sm font-semibold leading-relaxed text-stone-600">{step.text}</p>
               </div>
             ))}
+          </div>
+          <div>
+            <span className="rounded-full bg-white px-4 py-2 font-sans text-[11px] font-extrabold uppercase tracking-[0.18em] text-[var(--brand-brown)]">Roast to jar</span>
+            <h2 className="mt-5 font-heading text-4xl font-bold leading-none text-[var(--brand-brown)] sm:text-6xl">
+              The process is simple. The feeling should not be boring.
+            </h2>
+            <p className="mt-5 font-sans text-base font-semibold leading-relaxed text-[var(--brand-brown)]/75">
+              The design now gives the brand more movement, colour and product presence while keeping the story honest and local.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Timeline - Changed to clean offwhite grid */}
-      <section className="bg-white py-16 sm:py-20 border-b border-stone-200">
+      <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="text-center">
-            <span className="font-sans text-xs font-bold uppercase tracking-wider text-amber-800">
-              The Process
-            </span>
-            <h2 className="mt-1 font-heading text-3xl font-bold text-stone-900 sm:text-4xl">
-              How it&apos;s made
-            </h2>
+            <span className="brand-kicker">Meet the family</span>
+            <h2 className="brand-headline mx-auto mt-5 max-w-3xl text-4xl leading-none sm:text-6xl">Different jars for different homes</h2>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s) => (
-              <div
-                key={s.n}
-                className="relative rounded-2xl border border-stone-200 bg-[#faf9f6] p-6 shadow-xs"
-              >
-                <span className="font-heading text-3xl font-bold text-amber-700">
-                  {s.n}
-                </span>
-                <h3 className="mt-2 font-heading text-lg font-bold text-stone-900">
-                  {s.title}
-                </h3>
-                <p className="mt-2 font-sans text-xs leading-relaxed text-stone-500">
-                  {s.desc}
-                </p>
-              </div>
-            ))}
+            {apiProducts.slice(0, 4).map((product) => {
+              const imageUrl = getApiProductImage(product)
+              return (
+                <Link key={product.slug} href={`/products/${product.slug}`} className="group relative min-h-[280px] overflow-hidden rounded-[2rem] bg-[var(--brand-blue)] p-6 text-white shadow-[0_10px_0_rgba(74,44,8,.12)] transition-transform hover:-translate-y-1 even:bg-[var(--brand-red)]">
+                  <div className="absolute -right-14 -top-14 h-36 w-36 rounded-full bg-white/22" />
+                  <h3 className="relative z-10 max-w-[10rem] font-heading text-3xl font-bold leading-none">{product.flavor}</h3>
+                  <p className="relative z-10 mt-3 max-w-[11rem] font-sans text-xs font-bold leading-relaxed text-white/82">{product.bestFor.slice(0, 2).join(' • ')}</p>
+                  {imageUrl && (
+                    <img src={imageUrl} alt={`${product.name} jar`} loading="lazy" decoding="async" className="absolute -bottom-12 right-0 w-[54%] rotate-[8deg] drop-shadow-2xl transition-transform group-hover:scale-105" />
+                  )}
+                </Link>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="relative overflow-hidden rounded-3xl bg-amber-700 px-6 py-14 text-center text-white sm:px-12 shadow-sm">
-            <h2 className="mx-auto max-w-xl text-balance font-heading text-3xl font-bold sm:text-4xl">
-              Come for the protein. Stay for the flavor.
-            </h2>
-            <Link
-              href="/products"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 font-heading text-base font-bold text-stone-950 transition-transform hover:-translate-y-0.5 shadow-xs"
-            >
-              Shop Kurkees <ArrowRight className="h-4 w-4" />
+      <section className="bg-[var(--brand-brown)] px-4 py-16 text-white sm:px-6 sm:py-20">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <h2 className="font-heading text-5xl font-bold leading-none sm:text-7xl">A local brand with a louder shelf presence.</h2>
+            <p className="mt-5 max-w-xl font-sans text-lg font-medium leading-relaxed text-white/76">
+              Kurkees can be playful and premium at the same time: bright panels, rounded type, product-led scenes and a clear online checkout path.
+            </p>
+            <Link href="/products" className="mt-8 brand-button-primary">
+              Explore products <ArrowRight className="h-5 w-5" />
             </Link>
+          </div>
+          <div className="relative min-h-[330px]">
+            <div className="absolute inset-x-10 bottom-0 h-16 rounded-full bg-black/30 blur-xl" />
+            <Image src={products[6].image} alt="Chocofeda chocolate peanut spread" width={230} height={320} className="absolute right-4 top-0 w-[40%] rotate-[9deg] drop-shadow-2xl" />
+            <Image src={products[4].image} alt="Unsalted sugar-free Kurkees jar" width={260} height={340} className="absolute left-8 top-4 w-[46%] -rotate-[8deg] drop-shadow-2xl" />
+            <Image src={products[1].image} alt="Crunchy Kurkees jar" width={220} height={310} className="absolute bottom-0 left-1/2 w-[36%] -translate-x-1/2 rotate-[3deg] drop-shadow-2xl" />
           </div>
         </div>
       </section>

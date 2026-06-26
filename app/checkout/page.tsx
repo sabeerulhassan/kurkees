@@ -1,41 +1,56 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import { useCart } from '@/lib/cart-context'
-import { Loader2, ArrowLeft, Check, AlertTriangle, Sparkles } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { AlertTriangle, Check, ImageOff, Loader2, MessageCircle, Sparkles } from 'lucide-react'
+import { useCart } from '@/lib/cart-context'
 
 const FLAT_DELIVERY_FEE = 200
+
+function CheckoutItemImage({ src, alt }: { src?: string; alt: string }) {
+  const [failed, setFailed] = useState(false)
+
+  if (!src || failed) {
+    return (
+      <div className="flex h-full w-full items-center justify-center text-stone-300">
+        <ImageOff className="h-4 w-4" />
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className="h-full w-full object-contain p-1"
+    />
+  )
+}
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { cart, cartTotal, clearCart } = useCart()
 
-  // Form States
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
   const [city, setCity] = useState('')
   const [notes, setNotes] = useState('')
-
-  // Hydration state to prevent overwriting local storage on initial render
   const [isHydrated, setIsHydrated] = useState(false)
 
-  // Discount States
   const [validating, setValidating] = useState(false)
   const [appliedDiscount, setAppliedDiscount] = useState<number>(0)
   const [discountMessage, setDiscountMessage] = useState<string | null>(null)
   const [discountError, setDiscountError] = useState<string | null>(null)
-
-  // High-Performance Cache for API Validations
   const lastCheckedRef = useRef({ phone: '', address: '', city: '', total: 0 })
 
-  // Order Submission States
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  // 1. Initial Load: Pull from Local Storage
   useEffect(() => {
     const savedProfile = localStorage.getItem('kurkees_customer_profile')
     if (savedProfile) {
@@ -52,7 +67,6 @@ export default function CheckoutPage() {
     setIsHydrated(true)
   }, [])
 
-  // 2. Real-Time Sync: Save to Local Storage on every keystroke
   useEffect(() => {
     if (isHydrated) {
       const profile = { name, phone, address, city }
@@ -60,17 +74,13 @@ export default function CheckoutPage() {
     }
   }, [name, phone, address, city, isHydrated])
 
-  // 3. Weight Parser Helper
   const calculatedWeightAndPcs = () => {
     let totalGrams = 0
     let totalPcs = 0
-    
-    cart.forEach(item => {
-      const sizeStr = item.size
-      const numValue = parseInt(sizeStr.replace(/[^0-9]/g, ''))
-      if (!isNaN(numValue)) {
-        totalGrams += numValue * item.quantity
-      }
+
+    cart.forEach((item) => {
+      const numValue = parseInt(item.size.replace(/[^0-9]/g, ''))
+      if (!isNaN(numValue)) totalGrams += numValue * item.quantity
       totalPcs += item.quantity
     })
 
@@ -80,9 +90,8 @@ export default function CheckoutPage() {
     return { kilo, gram, pcs: totalPcs }
   }
 
-  // 4. Pure Debounce Validation Engine (For Discounts & Fraud Checks)
   useEffect(() => {
-    const cleanPhone = phone.replace(/[\s\-\(\)\+]/g, "")
+    const cleanPhone = phone.replace(/[\s\-\(\)\+]/g, '')
     const isPhoneValid = cleanPhone.length >= 9 && cleanPhone.length <= 13
     const isAddressValid = address.trim().length >= 4
     const isCityValid = city.trim().length >= 2
@@ -113,27 +122,26 @@ export default function CheckoutPage() {
           body: JSON.stringify({
             customer_phone: cleanPhone,
             customer_address: address.trim(),
-            cart: cart, 
-            discount_code: "",
-            apply_first_time: true
-          })
+            cart,
+            discount_code: '',
+            apply_first_time: true,
+          }),
         })
-        
+
         if (response.ok) {
           const res = await response.json()
-          
           lastCheckedRef.current = {
             phone: cleanPhone,
             address: address.trim(),
             city: city.trim(),
-            total: cartTotal
+            total: cartTotal,
           }
 
           if (res.valid) {
             setAppliedDiscount(res.discount_amount)
             setDiscountMessage(res.message)
             setDiscountError(null)
-          } else if (res.type === "fraud_flagged") {
+          } else if (res.type === 'fraud_flagged') {
             setAppliedDiscount(0)
             setDiscountMessage(null)
             setDiscountError(res.message)
@@ -151,8 +159,9 @@ export default function CheckoutPage() {
     }, 800)
 
     return () => clearTimeout(delayDebounce)
-    
-  }, [phone, address, city, cartTotal, cart]) 
+  }, [phone, address, city, cartTotal, cart])
+
+  const finalTotal = Math.max(0, cartTotal - appliedDiscount) + FLAT_DELIVERY_FEE
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -162,12 +171,7 @@ export default function CheckoutPage() {
     setErrorMessage(null)
 
     const { kilo, gram, pcs } = calculatedWeightAndPcs()
-
-    const summaryString = cart
-      .map(item => `${item.quantity}x ${item.name} (${item.size})`)
-      .join(', ')
-
-    const computedTotal = Math.max(0, cartTotal - appliedDiscount) + FLAT_DELIVERY_FEE
+    const summaryString = cart.map((item) => `${item.quantity}x ${item.name} (${item.size})`).join(', ')
 
     const payload = {
       customer_phone: phone,
@@ -175,12 +179,13 @@ export default function CheckoutPage() {
       customer_address: address,
       customer_city: city,
       summary: summaryString,
-      cart: cart,
+      cart,
       notes: notes || null,
       kilo,
       gram,
       pcs,
-      apply_first_time: appliedDiscount > 0
+      total_amount: finalTotal,
+      apply_first_time: appliedDiscount > 0,
     }
 
     try {
@@ -196,7 +201,6 @@ export default function CheckoutPage() {
         throw new Error(errorData.message || 'Failed to place order.')
       }
 
-      // Final strict save on successful order
       const profile = { name, phone, address, city }
       localStorage.setItem('kurkees_customer_profile', JSON.stringify(profile))
 
@@ -209,43 +213,33 @@ export default function CheckoutPage() {
     }
   }
 
-  const finalTotal = Math.max(0, cartTotal - appliedDiscount) + FLAT_DELIVERY_FEE
-
   return (
-    <main className="relative min-h-screen bg-[#faf9f6] py-12">
-      
-      {/* Dynamic Locking Loading Modal */}
-      {validating && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/10 backdrop-blur-xs cursor-wait">
-          <div className="bg-white border border-stone-200 p-6 rounded-2xl shadow-lg flex flex-col items-center space-y-4">
-            <Loader2 className="h-7 w-7 animate-spin text-amber-700" />
-            <p className="font-heading text-lg font-bold text-stone-850">Calculating Best Price...</p>
-          </div>
+    <main className="relative min-h-screen bg-[#fffaf0] py-5 sm:py-8">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mb-4 flex flex-col gap-2 sm:mb-6">
+          <h1 className="font-heading text-3xl font-bold leading-tight text-[#3a210f] sm:text-4xl">Checkout</h1>
+          <p className="max-w-2xl font-sans text-sm leading-relaxed text-stone-600">
+            Confirm your order and delivery details. Cash on Delivery is available.
+          </p>
         </div>
-      )}
-
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <Link href="/products" className="inline-flex items-center gap-2 mb-8 font-sans text-sm font-bold text-stone-500 hover:text-amber-700 transition-colors">
-          <ArrowLeft className="h-4 w-4" /> Continue Shopping
-        </Link>
-
-        <h1 className="font-heading text-4xl font-bold text-stone-900 mb-8 leading-tight">Checkout</h1>
 
         {errorMessage && (
-          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 text-red-800 font-sans font-semibold text-sm flex items-center space-x-2">
+          <div className="mb-6 flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 p-4 font-sans text-sm font-semibold text-red-800">
             <AlertTriangle size={18} className="shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
-        <div className="grid gap-8 lg:grid-cols-12">
-          {/* Form */}
-          <div className="lg:col-span-7">
-            <form onSubmit={handlePlaceOrder} className="bg-white border border-stone-200/80 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
-              <h2 className="font-heading text-2xl font-bold text-stone-900">Delivery Details</h2>
+        <div className="grid gap-6 lg:grid-cols-12 lg:gap-8">
+          <div className="order-2 lg:order-1 lg:col-span-7">
+            <form onSubmit={handlePlaceOrder} className="space-y-5 rounded-2xl border border-amber-900/10 bg-white p-5 shadow-sm sm:p-8">
+              <div>
+                <h2 className="font-heading text-2xl font-bold text-[#3a210f]">Delivery details</h2>
+                <p className="mt-1 font-sans text-sm text-stone-500">Only the details needed to deliver your order.</p>
+              </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="name" className="font-sans font-bold text-xs text-stone-500 uppercase tracking-wider">Full Name *</label>
+                <label htmlFor="name" className="font-sans text-xs font-bold uppercase tracking-wider text-stone-500">Full name *</label>
                 <input
                   id="name"
                   type="text"
@@ -253,26 +247,26 @@ export default function CheckoutPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Ruwan Perera"
-                  className="h-11 w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 font-sans text-sm outline-none transition-all focus:border-amber-600 focus:bg-white focus:ring-1 focus:ring-amber-600"
+                  className="h-12 w-full rounded-xl border border-amber-900/10 bg-[#fff7e8]/50 px-4 font-sans text-base outline-none transition-all focus:border-[#8a4b19] focus:bg-white focus:ring-1 focus:ring-amber-600 sm:h-11 sm:text-sm"
                 />
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="phone" className="font-sans font-bold text-xs text-stone-500 uppercase tracking-wider">WhatsApp / Phone Number *</label>
+                <label htmlFor="phone" className="font-sans text-xs font-bold uppercase tracking-wider text-stone-500">WhatsApp / phone number *</label>
                 <input
                   id="phone"
-                  type="text"
+                  type="tel"
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="e.g. 0777278378"
-                  className="h-11 w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 font-sans text-sm outline-none transition-all focus:border-amber-600 focus:bg-white focus:ring-1 focus:ring-amber-600"
+                  className="h-12 w-full rounded-xl border border-amber-900/10 bg-[#fff7e8]/50 px-4 font-sans text-base outline-none transition-all focus:border-[#8a4b19] focus:bg-white focus:ring-1 focus:ring-amber-600 sm:h-11 sm:text-sm"
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="address" className="font-sans font-bold text-xs text-stone-500 uppercase tracking-wider">Delivery Address *</label>
+                  <label htmlFor="address" className="font-sans text-xs font-bold uppercase tracking-wider text-stone-500">Delivery address *</label>
                   <input
                     id="address"
                     type="text"
@@ -280,11 +274,11 @@ export default function CheckoutPage() {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="e.g. 123 Galle Road"
-                    className="h-11 w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 font-sans text-sm outline-none transition-all focus:border-amber-600 focus:bg-white focus:ring-1 focus:ring-amber-600"
+                    className="h-12 w-full rounded-xl border border-amber-900/10 bg-[#fff7e8]/50 px-4 font-sans text-base outline-none transition-all focus:border-[#8a4b19] focus:bg-white focus:ring-1 focus:ring-amber-600 sm:h-11 sm:text-sm"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="city" className="font-sans font-bold text-xs text-stone-500 uppercase tracking-wider">City / Town *</label>
+                  <label htmlFor="city" className="font-sans text-xs font-bold uppercase tracking-wider text-stone-500">City / town *</label>
                   <input
                     id="city"
                     type="text"
@@ -292,32 +286,38 @@ export default function CheckoutPage() {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="e.g. Colombo 03"
-                    className="h-11 w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 font-sans text-sm outline-none transition-all focus:border-amber-600 focus:bg-white focus:ring-1 focus:ring-amber-600"
+                    className="h-12 w-full rounded-xl border border-amber-900/10 bg-[#fff7e8]/50 px-4 font-sans text-base outline-none transition-all focus:border-[#8a4b19] focus:bg-white focus:ring-1 focus:ring-amber-600 sm:h-11 sm:text-sm"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="notes" className="font-sans font-bold text-xs text-stone-500 uppercase tracking-wider">Special Delivery Instructions</label>
+                <label htmlFor="notes" className="font-sans text-xs font-bold uppercase tracking-wider text-stone-500">Special delivery instructions</label>
                 <textarea
                   id="notes"
                   rows={3}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Drop at gate, deliver after 5pm..."
-                  className="rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-3 font-sans text-sm outline-none transition-all focus:border-amber-600 focus:bg-white focus:ring-1 focus:ring-amber-600"
+                  className="rounded-xl border border-amber-900/10 bg-[#fff7e8]/50 px-4 py-3 font-sans text-base outline-none transition-all focus:border-[#8a4b19] focus:bg-white focus:ring-1 focus:ring-amber-600 sm:text-sm"
                 />
               </div>
 
-              {/* Dynamic Alerts */}
+              {validating && (
+                <div className="flex items-center gap-2 rounded-xl border border-stone-200 bg-stone-50 p-3 font-sans text-xs font-bold text-stone-600">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Checking best available price...
+                </div>
+              )}
+
               {discountMessage && (
-                <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-bold flex items-center space-x-2 animate-pulse">
+                <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 font-sans text-xs font-bold text-emerald-800">
                   <Check size={16} className="shrink-0" />
                   <span>{discountMessage}</span>
                 </div>
               )}
+
               {discountError && (
-                <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold flex items-center space-x-2">
+                <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-[#fff4cf] p-4 font-sans text-xs font-semibold text-[#5b2f17]">
                   <AlertTriangle size={16} className="shrink-0" />
                   <span>{discountError}</span>
                 </div>
@@ -325,61 +325,89 @@ export default function CheckoutPage() {
 
               <button
                 type="submit"
-                disabled={submitting || validating}
-                className="w-full flex items-center justify-center gap-2 rounded-full bg-amber-700 hover:bg-amber-800 text-white px-8 py-4 font-heading text-lg font-bold transition-all shadow-sm disabled:opacity-50"
+                disabled={submitting || validating || cart.length === 0}
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#5b2f17] px-8 py-4 font-heading text-lg font-bold text-white shadow-sm transition-all hover:bg-[#4a2512] disabled:opacity-50"
               >
                 {submitting && <Loader2 className="h-5 w-5 animate-spin" />}
-                <span>{submitting ? 'Placing Order...' : 'Place Cash on Delivery Order'}</span>
+                <span>{submitting ? 'Placing order...' : cart.length === 0 ? 'Add products to checkout' : 'Place Cash on Delivery order'}</span>
               </button>
+
+              <p className="text-center font-sans text-xs font-semibold text-stone-500">
+                Need help?{' '}
+                <a
+                  href="https://wa.me/94777278378?text=Hi%20Kurkees%2C%20I%20need%20help%20with%20my%20checkout."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 font-bold text-[#8a4b19] underline-offset-4 hover:underline"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" /> WhatsApp us
+                </a>
+              </p>
             </form>
           </div>
 
-          {/* Cart Summary */}
-          <div className="lg:col-span-5">
-            <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
-              <h2 className="font-heading text-2xl font-bold text-stone-900">Order Summary</h2>
+          <div className="order-1 lg:order-2 lg:col-span-5">
+            <div className="sticky top-28 space-y-5 rounded-2xl border border-amber-900/10 bg-white p-5 shadow-sm sm:p-6">
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="font-heading text-2xl font-bold text-[#3a210f]">Order summary</h2>
+                <Link href="/products" className="rounded-full border border-stone-200 px-3 py-1.5 font-sans text-xs font-bold text-stone-600 hover:bg-stone-50">
+                  Edit basket
+                </Link>
+              </div>
 
-              <div className="divide-y border-y border-stone-100 divide-stone-100 py-1">
-                {cart.map(item => (
+              <div className="divide-y divide-stone-100 border-y border-stone-100 py-1">
+                {cart.length === 0 && (
+                  <div className="py-8 text-center">
+                    <p className="font-heading text-lg font-bold text-[#3a210f]">Your basket is empty</p>
+                    <Link href="/products" className="mt-3 inline-flex rounded-full border border-stone-200 px-4 py-2 font-sans text-sm font-bold text-stone-700 hover:bg-stone-50">
+                      Choose products
+                    </Link>
+                  </div>
+                )}
+                {cart.map((item) => (
                   <div key={`${item.slug}-${item.size}`} className="flex items-center justify-between gap-4 py-4">
-                    <div className="relative h-12 w-12 shrink-0 rounded-lg bg-[#faf9f6] border border-stone-100 overflow-hidden">
-                      <img src={item.image} alt={item.name} className="object-contain p-1 w-full h-full" />
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-stone-100 bg-background">
+                      <CheckoutItemImage src={item.image} alt={item.name} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-heading text-sm font-bold text-stone-900 truncate">{item.name}</h4>
-                      <p className="text-xs font-sans text-stone-500">{item.size} × {item.quantity}</p>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="truncate font-heading text-sm font-bold text-[#3a210f]">{item.name}</h4>
+                      <p className="font-sans text-xs text-stone-500">{item.size} × {item.quantity}</p>
                     </div>
-                    <div className="text-right shrink-0">
-                      <span className="font-sans font-bold text-sm text-stone-900">Rs. {(item.price * item.quantity).toLocaleString()}</span>
+                    <div className="shrink-0 text-right">
+                      <span className="font-sans text-sm font-bold text-[#3a210f]">Rs. {(item.price * item.quantity).toLocaleString()}</span>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="space-y-2 border-b border-stone-100 pb-4 text-sm font-sans text-stone-500">
-                <div className="flex justify-between">
+              <div className="space-y-2 border-b border-stone-100 pb-4 font-sans text-sm text-stone-500">
+                <div className="flex justify-between gap-4">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-stone-900">Rs. {cartTotal.toLocaleString()}</span>
+                  <span className="font-semibold text-[#3a210f]">Rs. {cartTotal.toLocaleString()}</span>
                 </div>
-                
+
                 {appliedDiscount > 0 && (
-                  <div className="flex justify-between text-emerald-700 font-bold items-center">
+                  <div className="flex items-center justify-between gap-4 font-bold text-emerald-700">
                     <span className="flex items-center gap-1">
-                      <Sparkles size={14} /> First-Time Buyer (12%)
+                      <Sparkles size={14} /> First-time buyer discount
                     </span>
                     <span>- Rs. {appliedDiscount.toLocaleString()}</span>
                   </div>
                 )}
-                
-                <div className="flex justify-between">
-                  <span>Standard Island-wide Delivery (COD)</span>
-                  <span className="font-semibold text-stone-900">Rs. {FLAT_DELIVERY_FEE}</span>
+
+                <div className="flex justify-between gap-4">
+                  <span>Islandwide delivery</span>
+                  <span className="font-semibold text-[#3a210f]">Rs. {FLAT_DELIVERY_FEE}</span>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-stone-900 pt-2">
-                <span className="font-sans text-xs font-bold text-stone-400 uppercase tracking-wider">Total Amount</span>
-                <span className="font-heading text-3xl font-bold text-amber-700">Rs. {finalTotal.toLocaleString()}</span>
+              <div className="flex items-center justify-between gap-4 text-[#3a210f]">
+                <span className="font-sans text-xs font-bold uppercase tracking-wider text-stone-400">Total amount</span>
+                <span className="font-heading text-3xl font-bold text-[#8a4b19]">Rs. {finalTotal.toLocaleString()}</span>
+              </div>
+
+              <div className="rounded-xl bg-[#fff7e8] p-4 font-sans text-xs font-semibold leading-relaxed text-stone-600">
+                You pay when the order is delivered. We may contact you only if we need to clarify delivery details.
               </div>
             </div>
           </div>

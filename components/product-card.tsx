@@ -1,67 +1,94 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import type { Product } from '@/lib/data'
+'use client'
 
-const tagColor: Record<string, string> = {
-  'Best Seller': 'bg-amber-50 text-amber-800 border-amber-100',
-  'Classic': 'bg-stone-100 text-stone-800 border-stone-200',
-  'Sugar-Free': 'bg-orange-50 text-orange-800 border-orange-100',
-  '100% Pure': 'bg-emerald-50 text-emerald-800 border-emerald-100',
-  'Nai Miris': 'bg-red-50 text-red-800 border-red-100',
-  'Chocofeda': 'bg-amber-50 text-amber-800 border-amber-100',
+import Link from 'next/link'
+import { useState } from 'react'
+import { ArrowRight, ImageOff } from 'lucide-react'
+import {
+  getApiProductImage,
+  getStartingPrice,
+  isSizeInStock,
+  type StoreProduct,
+} from '@/lib/api-products'
+
+function ProductImage({ src, alt }: { src: string | null; alt: string }) {
+  const [failed, setFailed] = useState(false)
+
+  if (!src || failed) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-stone-50 px-6 text-center font-sans text-xs font-semibold text-stone-400 sm:text-sm">
+        <ImageOff className="h-5 w-5" />
+        <span>Product photo</span>
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.015]"
+    />
+  )
 }
 
-export function ProductCard({ product }: { product: any }) {
-  const startingPrice = Math.min(...product.sizes.map((s: any) => s.price))
-  const defaultImg = product.images?.[0]?.image_url || "/placeholder.svg";
+export function ProductCard({ product }: { product: StoreProduct }) {
+  const startingPrice = getStartingPrice(product)
+  const imageUrl = getApiProductImage(product, 'thumbnail') || getApiProductImage(product, 'medium')
+  const hasStock = product.sizes.some((size) => isSizeInStock(size))
+  const visibleSizes = product.sizes.slice(0, 3)
 
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex flex-col rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-lg"
     >
-      <div className="relative mb-4 aspect-square overflow-hidden rounded-xl bg-[#faf9f6] border border-stone-100">
-        <Image
-          src={defaultImg}
-          alt={`${product.name} - Kurkees`}
-          fill
-          sizes="(max-width: 768px) 50vw, 25vw"
-          className="object-contain p-4 transition-transform duration-500 group-hover:scale-102"
-        />
-      </div>
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-white sm:aspect-square">
+        <ProductImage src={imageUrl} alt={`${product.name} jar`} />
 
-      <div className="flex flex-wrap gap-1 mb-2">
-        {product.tags.slice(0, 2).map((tag: string) => (
-          <span
-            key={tag}
-            className={`rounded-full border px-2.5 py-0.5 font-sans text-[10px] font-bold ${
-              tagColor[tag] ?? 'bg-stone-50 text-stone-600 border-stone-100'
-            }`}
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      <h3 className="font-heading text-lg font-bold text-stone-900 line-clamp-1 leading-snug">
-        {product.name}
-      </h3>
-      <p className="font-sans text-xs text-stone-500 mt-1 line-clamp-2">
-        {product.flavor}
-      </p>
-
-      <div className="mt-auto flex items-center justify-between pt-4 border-t border-stone-100 mt-4">
-        <div className="flex flex-col">
-          <span className="font-sans text-[9px] uppercase font-bold text-stone-400 tracking-wider">
-            Starting from
-          </span>
-          <span className="font-heading text-base font-bold text-stone-900 mt-0.5">
-            Rs. {startingPrice.toLocaleString()}
-          </span>
+        <div className="absolute right-2 top-2 rounded-full border border-stone-200 bg-white/95 px-2.5 py-1 font-sans text-[10px] font-bold text-stone-700 shadow-sm sm:right-3 sm:top-3 sm:text-[11px]">
+          {hasStock ? 'In stock' : 'Out of stock'}
         </div>
-        
-        <div className="rounded-full bg-amber-700 px-4 py-2 font-sans text-xs font-bold text-white transition-all hover:bg-amber-800 shadow-xs">
-          View Details
+      </div>
+
+      <div className="flex flex-1 flex-col border-t border-stone-100 p-4 sm:p-5">
+        <p className="font-sans text-[11px] font-bold uppercase tracking-[0.14em] text-stone-400 sm:text-xs">
+          {product.flavor}
+        </p>
+
+        <h3 className="mt-2 font-heading text-xl font-bold leading-tight text-[var(--brand-brown)] sm:text-2xl">
+          {product.name}
+        </h3>
+
+        <p className="mt-2 line-clamp-2 font-sans text-sm leading-relaxed text-stone-600 sm:mt-3">
+          {product.description}
+        </p>
+
+        {visibleSizes.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-1.5 sm:gap-2">
+            {visibleSizes.map((size) => (
+              <span
+                key={`${size.size}-${size.price}`}
+                className="rounded-full border border-stone-200 bg-white px-2.5 py-1 font-sans text-[11px] font-bold text-stone-600 sm:px-3 sm:text-xs"
+              >
+                {size.size}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-auto flex items-end justify-between pt-5 sm:pt-6">
+          <div>
+            <p className="font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-stone-400 sm:text-[11px]">From</p>
+            <p className="font-heading text-xl font-bold text-[var(--brand-brown)] sm:text-2xl">
+              {startingPrice > 0 ? `Rs. ${startingPrice.toLocaleString()}` : 'See price'}
+            </p>
+          </div>
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--brand-red)] text-white transition-transform group-hover:translate-x-1 sm:h-10 sm:w-10">
+            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+          </span>
         </div>
       </div>
     </Link>

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { X, Sparkles, ArrowRight } from 'lucide-react'
 
@@ -35,22 +36,22 @@ export function PromoModal() {
         onClick={handleClose}
       />
 
-      <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-stone-200 bg-white p-8 shadow-xl animate-in zoom-in-95 duration-300">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-amber-900/10 bg-white p-8 shadow-xl animate-in zoom-in-95 duration-300">
         
         <button 
           onClick={handleClose}
-          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-stone-50 text-stone-400 hover:text-stone-700 transition-colors"
+          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#fff7e8] text-stone-400 hover:text-stone-700 transition-colors"
           aria-label="Close promotion"
         >
-          <X className="h-4.5 w-4.5" />
+          <X className="h-4 w-4" />
         </button>
 
         <div className="flex flex-col items-center text-center mt-2">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-amber-50 text-amber-800 border border-amber-100">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fff4cf] text-[#5b2f17] border border-amber-900/10">
             <Sparkles className="h-6 w-6" />
           </div>
           
-          <h2 className="font-heading text-2xl font-bold text-stone-900 leading-tight">
+          <h2 className="font-heading text-2xl font-bold text-[#3a210f] leading-tight">
             Welcome Discount
           </h2>
           
@@ -62,14 +63,14 @@ export function PromoModal() {
             <Link 
               href="/products"
               onClick={handleClose}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-700 hover:bg-amber-800 text-white px-6 py-3 font-heading text-sm font-bold shadow-sm transition-transform hover:-translate-y-0.5"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#5b2f17] hover:bg-[#4a2512] text-white px-6 py-3 font-heading text-sm font-bold shadow-sm transition-transform hover:-translate-y-0.5"
             >
               Shop Our Jars <ArrowRight className="h-4 w-4" />
             </Link>
             
             <button
               onClick={handleClose}
-              className="w-full rounded-full border border-stone-200 px-6 py-2.5 font-sans text-xs font-bold uppercase tracking-wider text-stone-400 hover:text-stone-700 transition-colors"
+              className="w-full rounded-full border border-amber-900/10 px-6 py-2.5 font-sans text-xs font-bold uppercase tracking-wider text-stone-400 hover:text-stone-700 transition-colors"
             >
               Maybe later
             </button>
