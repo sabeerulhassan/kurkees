@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ShieldCheck } from 'lucide-react'
@@ -7,6 +8,11 @@ import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { BrandLogo } from '@/components/brand-logo'
 import { CartProvider } from '@/lib/cart-context'
+
+const FirstVisitOffer = dynamic(
+  () => import('@/components/first-visit-offer').then((module) => module.FirstVisitOffer),
+  { ssr: false },
+)
 
 function CheckoutHeader() {
   return (
@@ -45,6 +51,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           <Navbar />
           {children}
           <Footer />
+          <FirstVisitOffer />
         </>
       )}
     </CartProvider>
