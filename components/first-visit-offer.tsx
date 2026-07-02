@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Gift, ShoppingBag, X } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useCart } from '@/lib/cart-context'
 
 const DISMISSED_UNTIL_KEY = 'kurkees_first_visit_offer_dismissed_until'
@@ -33,18 +33,19 @@ function shouldSkipPath(pathname: string | null) {
   return (
     pathname === '/checkout' ||
     pathname === '/thank-you' ||
-    pathname === '/products' ||
-    pathname.startsWith('/products/') ||
-    pathname.startsWith('/product/') ||
-    pathname.startsWith('/shop/')
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/login')
   )
 }
 
 export function FirstVisitOffer() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { cartCount } = useCart()
   const [visible, setVisible] = useState(false)
   const [mounted, setMounted] = useState(false)
+
+  const forceShow = searchParams.get('offer') === '1'
 
   useEffect(() => {
     setMounted(true)
@@ -53,11 +54,16 @@ export function FirstVisitOffer() {
   useEffect(() => {
     if (!mounted || shouldSkipPath(pathname) || cartCount > 0) return
 
+    if (forceShow) {
+      setVisible(true)
+      return
+    }
+
     const dismissedUntil = getDismissedUntil()
     if (dismissedUntil && dismissedUntil > Date.now()) return
 
     const isSmallScreen = window.matchMedia('(max-width: 640px)').matches
-    const delay = isSmallScreen ? 6500 : 5000
+    const delay = isSmallScreen ? 4000 : 3500
 
     const timer = window.setTimeout(() => {
       if (!shouldSkipPath(window.location.pathname) && getDismissedUntil() <= Date.now()) {
@@ -69,7 +75,7 @@ export function FirstVisitOffer() {
     }, delay)
 
     return () => window.clearTimeout(timer)
-  }, [cartCount, mounted, pathname])
+  }, [cartCount, forceShow, mounted, pathname])
 
   useEffect(() => {
     if (shouldSkipPath(pathname) || cartCount > 0) {
