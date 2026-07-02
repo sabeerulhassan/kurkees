@@ -93,17 +93,17 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        <Script
-  id="contentsquare"
-  src="https://t.contentsquare.net/uxa/1e7ac76570f81.js"
-  strategy="afterInteractive"
-/>
       </head>
       <body className="font-sans antialiased text-foreground bg-background">
         <SiteShell>
           {children}
         </SiteShell>
         {process.env.NODE_ENV === 'production' && <Analytics />}
+        <Script
+  id="contentsquare"
+  src="https://t.contentsquare.net/uxa/1e7ac76570f81.js"
+  strategy="beforeInteractive"
+/>
       </body>
     </html>
   )
