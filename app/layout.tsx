@@ -3,7 +3,9 @@ import type { Metadata, Viewport } from 'next'
 import { Fredoka, Plus_Jakarta_Sans } from 'next/font/google'
 import { SiteShell } from '@/components/site-shell'
 import { siteConfig } from '@/lib/site'
+import Script from 'next/script'
 import './globals.css'
+
 
 const fredoka = Fredoka({
   variable: '--font-fredoka',
